@@ -1,3 +1,6 @@
+import Section from './Section'
+import RefRow from './RefRow'
+
 export default function HexagramCard({ hexagram }) {
   if (!hexagram) return null
 
@@ -21,7 +24,6 @@ export default function HexagramCard({ hexagram }) {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      {/* Header */}
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body items-center text-center">
           <div className="text-6xl font-serif">{chinese_name}</div>
@@ -53,7 +55,6 @@ export default function HexagramCard({ hexagram }) {
         italic
       />
 
-      {/* Yao Texts */}
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body">
           <h3 className="card-title">Yao Text</h3>
@@ -78,7 +79,6 @@ export default function HexagramCard({ hexagram }) {
 
       <Section title="Significance" text={significance} />
 
-      {/* Line Explanations */}
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body">
           <h3 className="card-title">Line-by-Line Explanation</h3>
@@ -100,7 +100,6 @@ export default function HexagramCard({ hexagram }) {
         </div>
       </div>
 
-      {/* Additional Reference */}
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body">
           <h3 className="card-title">Additional Reference</h3>
@@ -140,32 +139,5 @@ export default function HexagramCard({ hexagram }) {
         </div>
       </div>
     </div>
-  )
-}
-
-function Section({ title, text, mono = false, italic = false }) {
-  if (!text) return null
-  return (
-    <div className="card bg-base-100 shadow-xl border border-base-300">
-      <div className="card-body">
-        <h3 className="card-title">{title}</h3>
-        <p
-          className={`whitespace-pre-line leading-relaxed ${mono ? 'font-mono' : ''} ${
-            italic ? 'italic opacity-90' : ''
-          }`}
-        >
-          {text}
-        </p>
-      </div>
-    </div>
-  )
-}
-
-function RefRow({ label, value }) {
-  return (
-    <tr>
-      <th className="w-1/3">{label}</th>
-      <td>{value}</td>
-    </tr>
   )
 }

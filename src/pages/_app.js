@@ -1,10 +1,11 @@
-// src/pages/_app.js
+import { Provider } from 'react-redux'
+import { store } from '@/shared/redux/store'
 import '@/styles/globals.css'
 
 export default function App({ Component, pageProps }) {
   return (
-    <div data-theme="caramellatte">
+    <Provider store={store}>
       <Component {...pageProps} />
-    </div>
+    </Provider>
   )
 }
