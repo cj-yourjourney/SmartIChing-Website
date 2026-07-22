@@ -6,7 +6,8 @@
  */
 
 export const ROUTES = {
-  HOME: '/'
+  HOME: '/',
+  HEXAGRAM: '/hexagram'
 }
 
 // Helper function to check if a route is active
