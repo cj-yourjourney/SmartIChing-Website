@@ -25,6 +25,7 @@ export default function HexagramPage() {
 
   return (
     <main data-theme="sunset" className="min-h-screen bg-base-200 py-10 px-4">
+      <h3>updated!!!!</h3>
       <HexagramForm
         number={number}
         pinyinName={pinyinName}
