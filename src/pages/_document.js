@@ -4,11 +4,12 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
+        {/* eslint-disable-next-line @next/next/next-script-for-ga */}
         <script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-2FVTDEEQEJ"
         />
-        {/* eslint-disable-next-line @next/next/next-script-for-ga */}
+
         <script
           dangerouslySetInnerHTML={{
             __html: `
