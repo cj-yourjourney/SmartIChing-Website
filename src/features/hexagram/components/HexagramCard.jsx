@@ -12,14 +12,14 @@ export default function HexagramCard({ hexagram }) {
     upper_trigram,
     lower_trigram,
     name_and_structure,
-    sequence_of_gua,
-    decision,
-    commentary_on_decision,
-    commentary_on_symbol,
-    yao_texts,
-    significance,
-    line_explanations,
-    additional_reference
+    how_we_got_here,
+    judgment,
+    commentary_on_judgment,
+    imagery,
+    lines,
+    explanation,
+    line_by_line_explanation,
+    quick_reference
   } = hexagram
 
   return (
@@ -42,34 +42,30 @@ export default function HexagramCard({ hexagram }) {
       </div>
 
       <Section title="Name and Structure" text={name_and_structure} />
-      <Section title="Sequence of the Gua" text={sequence_of_gua} />
-      <Section title="Decision" text={decision} mono />
+      <Section title="How We Got Here" text={how_we_got_here} />
+      <Section title="Judgment" text={judgment} mono />
       <Section
-        title="Commentary on the Decision"
-        text={commentary_on_decision}
+        title="Commentary on the Judgment"
+        text={commentary_on_judgment}
         italic
       />
-      <Section
-        title="Commentary on the Symbol"
-        text={commentary_on_symbol}
-        italic
-      />
+      <Section title="The Imagery" text={imagery} italic />
 
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body">
-          <h3 className="card-title">Yao Text</h3>
+          <h3 className="card-title">The Lines</h3>
           <div className="space-y-4">
-            {yao_texts?.map((yao) => (
+            {lines?.map((line) => (
               <div
-                key={yao.line_number}
+                key={line.line_number}
                 className="border-l-4 border-primary pl-4"
               >
                 <div className="font-semibold">
-                  {yao.line_number}. {yao.line_name}
+                  {line.line_number}. {line.line_name}
                 </div>
-                <p className="whitespace-pre-line">{yao.text}</p>
+                <p className="whitespace-pre-line">{line.text}</p>
                 <p className="text-sm italic opacity-70 mt-1">
-                  {yao.commentary}
+                  {line.commentary}
                 </p>
               </div>
             ))}
@@ -77,13 +73,13 @@ export default function HexagramCard({ hexagram }) {
         </div>
       </div>
 
-      <Section title="Significance" text={significance} />
+      <Section title="Explanation" text={explanation} />
 
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body">
           <h3 className="card-title">Line-by-Line Explanation</h3>
           <div className="space-y-4">
-            {line_explanations?.map((line) => (
+            {line_by_line_explanation?.map((line) => (
               <div
                 key={line.line_number}
                 className="border-l-4 border-secondary pl-4"
@@ -102,36 +98,30 @@ export default function HexagramCard({ hexagram }) {
 
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body">
-          <h3 className="card-title">Additional Reference</h3>
+          <h3 className="card-title">Quick Reference</h3>
           <div className="overflow-x-auto">
             <table className="table">
               <tbody>
-                <RefRow label="Image" value={additional_reference?.image} />
-                <RefRow
-                  label="Recite as"
-                  value={additional_reference?.recite_as}
-                />
-                <RefRow label="Element" value={additional_reference?.element} />
-                <RefRow
-                  label="Structure"
-                  value={additional_reference?.structure}
-                />
-                <RefRow label="Month" value={additional_reference?.month} />
+                <RefRow label="Image" value={quick_reference?.image} />
+                <RefRow label="Recite as" value={quick_reference?.recite_as} />
+                <RefRow label="Element" value={quick_reference?.element} />
+                <RefRow label="Structure" value={quick_reference?.structure} />
+                <RefRow label="Month" value={quick_reference?.month} />
                 <RefRow
                   label="Host of the Gua"
-                  value={additional_reference?.host_of_gua}
+                  value={quick_reference?.host_of_gua}
                 />
                 <RefRow
                   label="Opposite Gua"
-                  value={`${additional_reference?.opposite_gua?.english_name} (${additional_reference?.opposite_gua?.number})`}
+                  value={`${quick_reference?.opposite_gua?.english_name} (${quick_reference?.opposite_gua?.number})`}
                 />
                 <RefRow
                   label="Inverse Gua"
-                  value={`${additional_reference?.inverse_gua?.english_name} (${additional_reference?.inverse_gua?.number})`}
+                  value={`${quick_reference?.inverse_gua?.english_name} (${quick_reference?.inverse_gua?.number})`}
                 />
                 <RefRow
                   label="Mutual Gua"
-                  value={`${additional_reference?.mutual_gua?.english_name} (${additional_reference?.mutual_gua?.number})`}
+                  value={`${quick_reference?.mutual_gua?.english_name} (${quick_reference?.mutual_gua?.number})`}
                 />
               </tbody>
             </table>
