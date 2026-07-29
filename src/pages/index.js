@@ -7,13 +7,13 @@ export default function Home() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#fdecd3'
+        backgroundColor: ''
       }}
     >
-      <h1 style={{ color: '#7a2e1a', fontSize: '2.5rem', fontWeight: 'bold' }}>
+      <h1 style={{ color: '', fontSize: '2.5rem', fontWeight: 'bold' }}>
         Smart I Ching
       </h1>
-      <p style={{ color: '#7a2e1a', marginTop: '1rem' }}>
+      <p style={{ color: '', marginTop: '1rem' }}>
         Coming soon — an AI-powered guide to the I Ching.
       </p>
     </main>

@@ -31,7 +31,7 @@ export default function HexagramPage() {
   }
 
   return (
-    <main data-theme="sunset" className="min-h-screen bg-base-200 py-10 px-4">
+    <main data-theme="" className="min-h-screen bg-base-200 py-10 px-4">
       <HexagramForm
         hexagrams={hexagrams}
         selectedNumber={selectedNumber}

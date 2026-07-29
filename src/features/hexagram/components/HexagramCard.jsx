@@ -11,6 +11,7 @@ export default function HexagramCard({ hexagram }) {
     english_name,
     upper_trigram,
     lower_trigram,
+    at_a_glance,
     name_and_structure,
     how_we_got_here,
     judgment,
@@ -27,7 +28,7 @@ export default function HexagramCard({ hexagram }) {
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body items-center text-center">
           <div className="text-6xl font-serif">{chinese_name}</div>
-          <h2 className="card-title text-2xl">
+          <h2 className="card-title text-2xl font-serif">
             ({number}) {pinyin_name} · {english_name}
           </h2>
           <div className="flex gap-4 text-sm opacity-70">
@@ -41,6 +42,7 @@ export default function HexagramCard({ hexagram }) {
         </div>
       </div>
 
+      <Section title="At a Glance" text={at_a_glance} />
       <Section title="Name and Structure" text={name_and_structure} />
       <Section title="How We Got Here" text={how_we_got_here} />
       <Section title="Judgment" text={judgment} mono />
@@ -53,7 +55,7 @@ export default function HexagramCard({ hexagram }) {
 
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body">
-          <h3 className="card-title">The Lines</h3>
+          <h3 className="card-title font-serif">The Lines</h3>
           <div className="space-y-4">
             {lines?.map((line) => (
               <div
@@ -77,7 +79,7 @@ export default function HexagramCard({ hexagram }) {
 
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body">
-          <h3 className="card-title">Line-by-Line Explanation</h3>
+          <h3 className="card-title font-serif">Line-by-Line Explanation</h3>
           <div className="space-y-4">
             {line_by_line_explanation?.map((line) => (
               <div
@@ -98,7 +100,7 @@ export default function HexagramCard({ hexagram }) {
 
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body">
-          <h3 className="card-title">Quick Reference</h3>
+          <h3 className="card-title font-serif">Quick Reference</h3>
           <div className="overflow-x-auto">
             <table className="table">
               <tbody>
