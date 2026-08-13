@@ -10,12 +10,14 @@ export default function HexagramCard({ hexagram }) {
     english_name,
     upper_trigram,
     lower_trigram,
-    description,
+    overall_meaning,
+    name_and_structure,
     judgment_text,
     judgment_commentary,
     image_text,
     image_commentary,
-    lines
+    lines,
+    sequence
   } = hexagram
 
   return (
@@ -37,7 +39,11 @@ export default function HexagramCard({ hexagram }) {
         </div>
       </div>
 
-      <Section title="Description" text={description} />
+      <Section title="Overall Meaning" text={overall_meaning} />
+
+      <Section title="The Image & the Name" text={name_and_structure} />
+
+      <Section title="How We Got Here" text={sequence} />
 
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body">
