@@ -26,22 +26,19 @@ export default function HexagramCard({ hexagram }) {
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="card bg-base-100 shadow-xl border border-base-300">
         <div className="card-body items-center text-center">
-          <div className="flex items-center gap-6">
-            <div className="text-6xl font-serif">{chinese_name}</div>
-            <HexagramLines values={line_values} />
-          </div>
-          <h2 className="card-title text-2xl font-serif">
+          <div className="text-6xl font-serif">{chinese_name}</div>
+          <h2 className="card-title text-2xl font-serif mt-1">
             ({number}) {pinyin_name} · {english_name}
           </h2>
-          <div className="flex flex-col items-center gap-2 text-sm opacity-70">
-            <span className="flex items-center gap-2">
-              Upper: {upper_trigram?.pinyin} · {upper_trigram?.meaning}
-              <HexagramLines values={line_values?.slice(3, 6)} size="xs" />
-            </span>
-            <span className="flex items-center gap-2">
-              Lower: {lower_trigram?.pinyin} · {lower_trigram?.meaning}
-              <HexagramLines values={line_values?.slice(0, 3)} size="xs" />
-            </span>
+          <div className="mt-4">
+            <HexagramLines
+              values={line_values}
+              size="sm"
+              labels={{
+                upper: `Upper: ${upper_trigram?.pinyin} · ${upper_trigram?.meaning}`,
+                lower: `Lower: ${lower_trigram?.pinyin} · ${lower_trigram?.meaning}`
+              }}
+            />
           </div>
         </div>
       </div>
@@ -83,27 +80,13 @@ export default function HexagramCard({ hexagram }) {
             {lines?.map((line) => (
               <div
                 key={line.line_number}
-                className="flex gap-4 border-l-4 border-primary pl-4"
+                className="border-l-4 border-primary pl-4"
               >
-                <div className="flex-shrink-0 pt-1">
-                  <div className="w-10 h-1">
-                    {line_values?.[line.line_number - 1] ? (
-                      <div className="w-full h-full bg-base-content rounded-sm" />
-                    ) : (
-                      <div className="w-full h-full flex justify-between">
-                        <div className="w-[45%] h-full bg-base-content rounded-sm" />
-                        <div className="w-[45%] h-full bg-base-content rounded-sm" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <div className="font-semibold">{line.line_name}</div>
-                  <p className="whitespace-pre-line font-mono">{line.text}</p>
-                  <p className="text-sm italic opacity-70 mt-1">
-                    {line.commentary}
-                  </p>
-                </div>
+                <div className="font-semibold">{line.line_name}</div>
+                <p className="whitespace-pre-line font-mono">{line.text}</p>
+                <p className="text-sm italic opacity-70 mt-1">
+                  {line.commentary}
+                </p>
               </div>
             ))}
           </div>
