@@ -1,9 +1,11 @@
+import { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   setQuestion,
   startCasting,
   lineCast,
-  resetCasting
+  resetCasting,
+  castHexagram
 } from './state/castingSlice'
 import { castLine } from './utils/castLine'
 import CoinToss from './components/CoinToss'
@@ -12,14 +14,18 @@ import CastingResult from './components/CastingResult'
 
 export default function CastingPage() {
   const dispatch = useDispatch()
-  const {
-    question,
-    lines,
-    phase,
-    originalHexagram,
-    resultingHexagram,
-    hasChangingLines
-  } = useSelector((state) => state.casting)
+  const { question, lines, phase, result, error } = useSelector(
+    (state) => state.casting
+  )
+
+  // Once the 6th line is cast, send everything to the backend. Guarded by
+  // phase === 'casting' so this only fires once per cast — as soon as the
+  // thunk goes pending, phase flips to 'submitting' and this stops matching.
+  useEffect(() => {
+    if (phase === 'casting' && lines.length === 6) {
+      dispatch(castHexagram({ question, lines: lines.map((l) => l.sum) }))
+    }
+  }, [phase, lines, question, dispatch])
 
   function handleStart() {
     dispatch(startCasting())
@@ -59,12 +65,12 @@ export default function CastingPage() {
           </div>
         )}
 
-        {(phase === 'casting' || phase === 'complete') && (
+        {(phase === 'casting' || phase === 'submitting') && (
           <div className="card bg-base-100 shadow-xl border border-base-300">
             <div className="card-body items-center">
               <LineStack lines={lines} />
 
-              {phase === 'casting' && (
+              {phase === 'casting' && lines.length < 6 && (
                 <>
                   <CoinToss lastCast={lines[lines.length - 1]} />
                   <button
@@ -75,18 +81,34 @@ export default function CastingPage() {
                   </button>
                 </>
               )}
+
+              {phase === 'submitting' && (
+                <div className="flex flex-col items-center gap-2 mt-4">
+                  <span className="loading loading-spinner loading-md" />
+                  <p className="text-sm opacity-70">Consulting the oracle…</p>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {phase === 'complete' && (
+        {phase === 'error' && (
+          <div className="card bg-base-100 shadow-xl border border-error">
+            <div className="card-body">
+              <p className="text-error font-semibold">
+                Something went wrong getting your reading.
+              </p>
+              <p className="text-sm opacity-70">{error}</p>
+              <button onClick={handleReset} className="btn btn-outline mt-4">
+                Try Again
+              </button>
+            </div>
+          </div>
+        )}
+
+        {phase === 'complete' && result && (
           <>
-            <CastingResult
-              originalHexagram={originalHexagram}
-              resultingHexagram={resultingHexagram}
-              hasChangingLines={hasChangingLines}
-              lines={lines}
-            />
+            <CastingResult result={result} />
             <button onClick={handleReset} className="btn btn-outline w-full">
               Cast Again
             </button>

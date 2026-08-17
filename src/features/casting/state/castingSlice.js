@@ -1,25 +1,31 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { getHexagramByPattern } from '../data/mockHexagrams'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { api, API_CONFIG } from '@/shared/api/config'
+
+// Once all 6 lines are cast, the component sends the question + the raw
+// 6/7/8/9 sum for each line (bottom to top) to the backend. The backend
+// resolves the hexagram, applies the traditional moving-line rules, and
+// returns the full reading — nothing about hexagram content or
+// interpretation is computed on the frontend anymore.
+export const castHexagram = createAsyncThunk(
+  'casting/castHexagram',
+  async ({ question, lines }, { rejectWithValue }) => {
+    try {
+      return await api.post(API_CONFIG.ENDPOINTS.CAST_HEXAGRAM, {
+        question,
+        lines
+      })
+    } catch (err) {
+      return rejectWithValue(err.message)
+    }
+  }
+)
 
 const initialState = {
   question: '',
-  phase: 'idle', // idle -> casting -> complete
+  phase: 'idle', // idle -> casting -> submitting -> complete | error
   lines: [], // bottom-to-top, each { char, changing, label, sum, coins }
-  originalHexagram: null,
-  resultingHexagram: null,
-  hasChangingLines: false
-}
-
-function buildOriginalPattern(lines) {
-  return lines.map((l) => l.char).join('')
-}
-
-function buildResultPattern(lines) {
-  return lines.map((l) => (l.changing ? flip(l.char) : l.char)).join('')
-}
-
-function flip(char) {
-  return char === 'y' ? 'n' : 'y'
+  result: null, // full backend response — see views/casting.py's response shape
+  error: null
 }
 
 const castingSlice = createSlice({
@@ -32,31 +38,36 @@ const castingSlice = createSlice({
     startCasting(state) {
       state.phase = 'casting'
       state.lines = []
-      state.originalHexagram = null
-      state.resultingHexagram = null
-      state.hasChangingLines = false
+      state.result = null
+      state.error = null
     },
     // payload is the result of castLine() from utils/castLine.js —
     // randomness happens in the component before dispatch, keeping this
-    // reducer pure.
+    // reducer pure. Once the 6th line lands, the component (watching
+    // lines.length) dispatches castHexagram — reducers can't trigger
+    // async thunks themselves.
     lineCast(state, action) {
       if (state.lines.length >= 6) return
       state.lines.push(action.payload)
-
-      if (state.lines.length === 6) {
-        const originalPattern = buildOriginalPattern(state.lines)
-        const resultPattern = buildResultPattern(state.lines)
-        state.hasChangingLines = state.lines.some((l) => l.changing)
-        state.originalHexagram = getHexagramByPattern(originalPattern)
-        state.resultingHexagram = state.hasChangingLines
-          ? getHexagramByPattern(resultPattern)
-          : null
-        state.phase = 'complete'
-      }
     },
     resetCasting() {
       return initialState
     }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(castHexagram.pending, (state) => {
+        state.phase = 'submitting'
+        state.error = null
+      })
+      .addCase(castHexagram.fulfilled, (state, action) => {
+        state.phase = 'complete'
+        state.result = action.payload
+      })
+      .addCase(castHexagram.rejected, (state, action) => {
+        state.phase = 'error'
+        state.error = action.payload || 'Something went wrong'
+      })
   }
 })
 

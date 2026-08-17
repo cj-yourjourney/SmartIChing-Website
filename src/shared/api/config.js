@@ -9,7 +9,8 @@ export const API_CONFIG = {
   BASE_URL: getApiUrl(),
   ENDPOINTS: {
     LIST_HEXAGRAMS: '/api/smart-iching/hexagrams/',
-    GENERATE_HEXAGRAM: '/api/smart-iching/generate/'
+    GENERATE_HEXAGRAM: '/api/smart-iching/generate/',
+    CAST_HEXAGRAM: '/api/smart-iching/cast/'
   }
 }
 
