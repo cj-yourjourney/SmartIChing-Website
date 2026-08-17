@@ -15,29 +15,53 @@ export default function CastingResult({ result }) {
     <div className="space-y-4">
       {/* Header: hexagram identity */}
       <div className="card bg-base-100 shadow-xl border border-base-300">
-        <div className="card-body">
-          <h3 className="card-title font-serif">Your Hexagram</h3>
+        <div className="card-body items-center text-center">
+          <h3 className="card-title font-serif self-start">Your Hexagram</h3>
+          <div className="text-5xl font-serif">{hexagram.chinese_name}</div>
           <p className="text-lg">
             ({hexagram.number}) {hexagram.pinyin_name} · {hexagram.english_name}
           </p>
+          <HexagramLines
+            values={hexagram.line_values}
+            size="sm"
+            labels={{
+              upper: `Upper: ${hexagram.upper_trigram?.pinyin} · ${hexagram.upper_trigram?.meaning}`,
+              lower: `Lower: ${hexagram.lower_trigram?.pinyin} · ${hexagram.lower_trigram?.meaning}`
+            }}
+          />
 
           {movingCount > 0 ? (
-            <p className="text-sm opacity-70 mt-1">
+            <p className="text-sm opacity-70 mt-2">
               {movingCount} changing line{movingCount > 1 ? 's' : ''} (line
               {movingCount > 1 ? 's' : ''} {moving_lines.join(', ')})
-              {resulting_hexagram && (
-                <>
-                  {' '}
-                  — moving toward ({resulting_hexagram.number}){' '}
-                  {resulting_hexagram.pinyin_name} ·{' '}
-                  {resulting_hexagram.english_name}
-                </>
-              )}
             </p>
           ) : (
-            <p className="text-sm opacity-70 mt-1">
+            <p className="text-sm opacity-70 mt-2">
               No changing lines — a settled reading.
             </p>
+          )}
+
+          {resulting_hexagram && (
+            <div className="w-full mt-4 pt-4 border-t border-base-300 flex flex-col items-center text-center gap-2">
+              <p className="text-xs uppercase tracking-wide opacity-60">
+                Moving Toward
+              </p>
+              <div className="text-3xl font-serif">
+                {resulting_hexagram.chinese_name}
+              </div>
+              <p className="text-base">
+                ({resulting_hexagram.number}) {resulting_hexagram.pinyin_name} ·{' '}
+                {resulting_hexagram.english_name}
+              </p>
+              <HexagramLines
+                values={resulting_hexagram.line_values}
+                size="sm"
+                labels={{
+                  upper: `Upper: ${resulting_hexagram.upper_trigram?.pinyin} · ${resulting_hexagram.upper_trigram?.meaning}`,
+                  lower: `Lower: ${resulting_hexagram.lower_trigram?.pinyin} · ${resulting_hexagram.lower_trigram?.meaning}`
+                }}
+              />
+            </div>
           )}
         </div>
       </div>
