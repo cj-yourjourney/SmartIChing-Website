@@ -4,6 +4,7 @@ import { ROUTES } from '@/shared/constants/routes'
 
 const links = [
   { href: ROUTES.HOME, label: 'Home' },
+  { href: ROUTES.ABOUT, label: 'About', subtitle: 'Our story' },
   { href: ROUTES.HEXAGRAM, label: 'Hexagram', subtitle: 'Browse all 64' },
   { href: ROUTES.CASTING, label: 'Casting', subtitle: 'Ask & cast' }
 ]
