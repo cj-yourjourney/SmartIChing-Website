@@ -1,20 +1,11 @@
 import { ROUTES } from '@/shared/constants/routes'
 
-// Hexagram 1 (Qian, The Creative) — six solid lines. Purely decorative.
-// Swap in a broken line ('broken') on any row to draw a different hexagram.
-const HEXAGRAM = ['solid', 'solid', 'solid', 'solid', 'solid', 'solid']
+// Hexagram 11, Tai (Peace): earth above heaven. Listed top line to bottom line.
+const HEXAGRAM = ['broken', 'broken', 'broken', 'solid', 'solid', 'solid']
 
-function HexagramLine({ type }) {
-  if (type === 'broken') {
-    return (
-      <div className="flex gap-4 w-full">
-        <div className="h-3 flex-1 rounded-full bg-primary" />
-        <div className="h-3 flex-1 rounded-full bg-primary" />
-      </div>
-    )
-  }
-  return <div className="h-3 w-full rounded-full bg-primary" />
-}
+// Shared two-column grid: label column on the left, content on the right.
+// Every section below uses it so the left and right edges line up.
+const SPLIT = 'grid grid-cols-1 md:grid-cols-[17rem_1fr] gap-x-16 gap-y-6'
 
 const TIMELINE = [
   {
@@ -25,7 +16,7 @@ const TIMELINE = [
   {
     when: 'Teenage years',
     title: 'Learning from my grandfather',
-    body: 'Tossing the three coins fascinated me, so I asked my grandfather to teach me everything: how to cast a hexagram, what each of the 64 hexagrams means, and how to interpret every changing line. I read books, commentaries, and watched videos on my own too. I have been asking the I Ching about my own big decisions ever since.'
+    body: 'Tossing the three coins fascinated me, so I asked my grandfather to teach me everything: how to cast a hexagram, what each of the 64 hexagrams means, and how to interpret every changing line. I read books and commentaries and watched videos on my own too. I have been asking the I Ching about my own big decisions ever since.'
   },
   {
     when: '2015',
@@ -41,66 +32,108 @@ const TIMELINE = [
 
 const STEPS = [
   {
-    title: 'Ask a Real Question',
+    title: 'Ask a real question',
     body: "Bring whatever you're actually facing: a decision, a relationship, a moment of uncertainty. The reading is built around your question, not a generic prompt."
   },
   {
-    title: 'Cast Your Hexagram',
+    title: 'Cast your hexagram',
     body: 'Your hexagram is cast using the traditional method, then interpreted by the latest AI models, grounded in classical source texts, not guesswork.'
   },
   {
-    title: 'Understand It Simply',
+    title: 'Understand it simply',
     body: 'No classical Chinese literacy required. You get a plain, modern explanation of what the reading means for your situation.'
   }
 ]
+
+const SOURCES = [
+  { name: 'Alfred Huang, The Complete I Ching', primary: true },
+  { name: 'Wilhelm/Baynes' },
+  { name: 'Minford' },
+  { name: 'Blofeld' }
+]
+
+function HexagramLine({ type }) {
+  if (type === 'broken') {
+    return (
+      <div className="flex w-full gap-5">
+        <div className="h-3 flex-1 rounded-full bg-primary" />
+        <div className="h-3 flex-1 rounded-full bg-primary" />
+      </div>
+    )
+  }
+  return <div className="h-3 w-full rounded-full bg-primary" />
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="h-5 w-5 text-primary"
+      aria-hidden="true"
+    >
+      <path
+        fillRule="evenodd"
+        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
+        clipRule="evenodd"
+      />
+    </svg>
+  )
+}
 
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-base-100 text-base-content">
       {/* Hero */}
-      <section className="px-6 pt-20 pb-16 sm:pt-28">
-        <div className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 items-center">
-          <div>
-            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight leading-tight">
+      <section className="px-6 pt-20 pb-16 md:pt-28 md:pb-20">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-12">
+          <div className="max-w-xl">
+            <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-6xl">
               About Smart I Ching
             </h1>
-            <p className="text-xl text-base-content/70 mt-6 leading-relaxed max-w-xl">
+            <p className="mt-6 text-xl leading-relaxed text-base-content/70">
               A 3,000-year-old system of wisdom, made easy to understand and
               easy to act on. Built by someone who grew up with it.
             </p>
           </div>
 
-          {/* Hexagram graphic */}
-          <div
-            aria-hidden="true"
-            className="hidden md:flex flex-col gap-4 w-40 p-8 rounded-box bg-base-200 border border-base-300"
-          >
-            {HEXAGRAM.map((type, i) => (
-              <HexagramLine key={i} type={type} />
-            ))}
-          </div>
+          <figure className="hidden shrink-0 md:block">
+            <div
+              aria-hidden="true"
+              className="flex w-44 flex-col gap-4 rounded-box border border-base-300 bg-base-200 p-8"
+            >
+              {HEXAGRAM.map((type, i) => (
+                <HexagramLine key={i} type={type} />
+              ))}
+            </div>
+            <figcaption className="mt-3 text-center text-sm text-base-content/60">
+              Hexagram 11, Tai (Peace)
+            </figcaption>
+          </figure>
         </div>
       </section>
 
       {/* Founder intro */}
-      <section className="px-6 pb-16">
-        <div className="mx-auto max-w-3xl grid grid-cols-1 sm:grid-cols-[14rem_1fr] gap-8 items-center">
-          <figure className="mx-auto sm:mx-0 w-48 sm:w-full">
+      <section className="px-6 pb-20 md:pb-24">
+        <div className={`mx-auto max-w-5xl items-center ${SPLIT}`}>
+          <figure className="mx-auto w-56 md:mx-0 md:w-full">
             <img
-              src="/images/about/cj-studio.webp"
+              src="/images/about/cj-studio-portrait.webp"
               alt="Portrait of CJ, founder of Smart I Ching"
               width={900}
-              height={1350}
-              className="w-full aspect-[4/5] object-cover object-top rounded-box border border-base-300 shadow-lg"
+              height={1160}
+              decoding="async"
+              className="h-auto w-full rounded-box border border-base-300 shadow-lg"
             />
           </figure>
-          <div>
-            <h2 className="text-3xl font-semibold">Hi, I'm CJ</h2>
-            <p className="text-sm text-base-content/60 mt-1">
+          <div className="text-center md:text-left">
+            <h2 className="text-3xl font-semibold sm:text-4xl">Hi, I'm CJ</h2>
+            <p className="mt-2 text-sm text-base-content/60">
               Software engineer, lifelong I Ching student, founder of Smart I
               Ching
             </p>
-            <p className="text-lg text-base-content/80 leading-relaxed mt-5">
+            <p className="mt-6 text-lg leading-relaxed text-base-content/80">
               This site is personal to me. Here is how a kid who watched his
               grandfather toss coins every morning ended up building an AI I
               Ching app.
@@ -109,38 +142,29 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Story timeline */}
-      <section className="px-6 pb-20">
-        <div className="mx-auto max-w-4xl">
-          <ul className="timeline timeline-vertical timeline-snap-icon max-md:timeline-compact">
+      {/* My story */}
+      <section className="px-6 pb-20 md:pb-24">
+        <div className={`mx-auto max-w-5xl ${SPLIT}`}>
+          <h2 className="text-2xl font-semibold md:sticky md:top-8 md:self-start">
+            My story
+          </h2>
+          <ul className="timeline timeline-vertical timeline-compact timeline-snap-icon">
             {TIMELINE.map((item, i) => (
               <li key={item.when}>
-                {i > 0 && <hr className="bg-primary/40" />}
-                <div className="timeline-start text-lg font-semibold text-primary md:pr-2">
-                  {item.when}
-                </div>
+                {i > 0 && <hr className="bg-primary/30" />}
                 <div className="timeline-middle">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="h-5 w-5 text-primary"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <CheckIcon />
                 </div>
-                <div className="timeline-end timeline-box bg-base-200 border-base-300 shadow-none my-4 !whitespace-normal !text-base-content">
-                  <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
-                  <p className="text-base-content/70 leading-relaxed font-normal">
+                <div className="timeline-end !whitespace-normal mb-8 w-full rounded-box border border-base-300 bg-base-200 p-6">
+                  <p className="text-sm font-semibold text-primary">
+                    {item.when}
+                  </p>
+                  <h3 className="mt-1 text-lg font-semibold">{item.title}</h3>
+                  <p className="mt-3 font-normal leading-relaxed text-base-content/70">
                     {item.body}
                   </p>
                 </div>
-                {i < TIMELINE.length - 1 && <hr className="bg-primary/40" />}
+                {i < TIMELINE.length - 1 && <hr className="bg-primary/30" />}
               </li>
             ))}
           </ul>
@@ -148,10 +172,10 @@ export default function AboutPage() {
       </section>
 
       {/* Why I built this */}
-      <section className="px-6 pb-20">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-3xl font-semibold mb-5">Why I built this</h2>
-          <div className="space-y-4 text-base-content/75 leading-relaxed text-lg">
+      <section className="px-6 pb-20 md:pb-24">
+        <div className={`mx-auto max-w-5xl ${SPLIT}`}>
+          <h2 className="text-2xl font-semibold">Why I built this</h2>
+          <div className="space-y-4 text-lg leading-relaxed text-base-content/75">
             <p>
               The I Ching has guided decisions for millennia, but its classical
               text is dense, symbolic, and hard to apply to modern life. Most
@@ -171,82 +195,97 @@ export default function AboutPage() {
       </section>
 
       {/* How it works */}
-      <section className="px-6 pb-20">
+      <section className="px-6 pb-20 md:pb-24">
         <div className="mx-auto max-w-5xl">
-          <h2 className="text-3xl font-semibold mb-8 text-center">
-            How it works
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {STEPS.map((step) => (
-              <div
+          <h2 className="mb-8 text-2xl font-semibold">How it works</h2>
+          <ol className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+            {STEPS.map((step, i) => (
+              <li
                 key={step.title}
-                className="card bg-base-200 border border-base-300"
+                className="card border border-base-300 bg-base-200"
               >
-                <div className="card-body">
+                <div className="card-body gap-3">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary"
+                  >
+                    {i + 1}
+                  </span>
                   <h3 className="card-title text-lg">{step.title}</h3>
-                  <p className="text-sm text-base-content/70 leading-relaxed">
+                  <p className="text-sm leading-relaxed text-base-content/70">
                     {step.body}
                   </p>
                 </div>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
       {/* Sourcing / credibility */}
-      <section className="px-6 pb-20">
-        <div className="mx-auto max-w-3xl">
-          <div role="alert" className="alert alert-soft alert-info items-start">
-            <div>
-              <h2 className="text-xl font-semibold mb-2">
-                Grounded in the source material
-              </h2>
-              <p className="text-base-content/75 leading-relaxed">
-                Every interpretation is grounded in respected translations and
-                commentary, primarily Alfred Huang's{' '}
-                <em>The Complete I Ching</em>, cross-referenced against
-                Wilhelm/Baynes, Minford, and Blofeld. I treat the tradition with
-                the respect it deserves. The AI's role is to make that depth
-                accessible, not to replace it.
-              </p>
-            </div>
+      <section className="px-6 pb-20 md:pb-24">
+        <div className={`mx-auto max-w-5xl ${SPLIT}`}>
+          <h2 className="text-2xl font-semibold">
+            Grounded in the source material
+          </h2>
+          <div>
+            <p className="text-lg leading-relaxed text-base-content/75">
+              Every interpretation is grounded in respected translations and
+              commentary. I treat the tradition with the respect it deserves.
+              The AI's role is to make that depth accessible, not to replace it.
+            </p>
+            <ul className="mt-6 flex flex-wrap gap-2">
+              {SOURCES.map((s) => (
+                <li
+                  key={s.name}
+                  className={`badge badge-lg ${
+                    s.primary ? 'badge-primary' : 'badge-outline'
+                  }`}
+                >
+                  {s.name}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-sm text-base-content/60">
+              Huang is the primary source. The others are used to cross-check.
+            </p>
           </div>
         </div>
       </section>
 
       {/* Closing belief */}
-      <section className="px-6 pb-20">
-        <div className="mx-auto max-w-3xl text-center">
-          <div className="divider mb-8" />
-          <blockquote className="text-2xl sm:text-3xl font-semibold leading-snug">
+      <section className="px-6 pb-20 md:pb-24">
+        <div className="mx-auto max-w-5xl">
+          <blockquote className="max-w-3xl border-l-4 border-primary pl-6 text-2xl font-semibold leading-snug sm:text-3xl">
             The 64 hexagrams are 64 situations we might meet in life, and
             together they describe the principles of the universe.
           </blockquote>
-          <p className="text-base-content/70 leading-relaxed text-lg mt-8">
-            I believe Chinese wisdom shows us how the universe works. I feel
-            fortunate to have grown up in a household that introduced me to the
-            I Ching. It helped me many times during the darkest moments of my
-            life, when I needed guidance most. I hope this site helps more
-            people understand the 64 hexagrams, make better decisions, and live
-            a better life.
-          </p>
-          <p className="text-base-content/70 leading-relaxed text-lg mt-4">
-            This project sits where my passion and my skills meet. Thank you for
-            being here.
-          </p>
-          <p className="mt-6 font-semibold">CJ</p>
+          <div className="mt-10 max-w-2xl space-y-4 text-lg leading-relaxed text-base-content/75">
+            <p>
+              I believe Chinese wisdom shows us how the universe works. I feel
+              fortunate to have grown up in a household that introduced me to
+              the I Ching. It helped me many times during the darkest moments of
+              my life, when I needed guidance most. I hope this site helps more
+              people understand the 64 hexagrams, make better decisions, and
+              live a better life.
+            </p>
+            <p>
+              This project sits where my passion and my skills meet. Thank you
+              for being here.
+            </p>
+            <p className="font-semibold text-base-content">CJ</p>
+          </div>
         </div>
       </section>
 
       {/* CTA */}
       <section className="px-6 pb-24">
-        <div className="mx-auto max-w-2xl card bg-base-200 border border-base-300">
-          <div className="card-body items-center text-center py-12">
-            <h2 className="text-2xl font-semibold">
+        <div className="card mx-auto max-w-5xl border border-base-300 bg-base-200">
+          <div className="card-body items-center py-14 text-center">
+            <h2 className="text-3xl font-semibold">
               Ready to see what it says?
             </h2>
-            <p className="text-base-content/70">
+            <p className="max-w-md text-base-content/70">
               Ask your question and cast your first hexagram.
             </p>
             <div className="card-actions mt-4">
