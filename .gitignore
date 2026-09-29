@@ -43,4 +43,8 @@ next-env.d.ts
 # SEO sitemap
 public/sitemap.xml
 public/sitemap-0.xml
+public/robots.txtpublic/images/
+
+
 public/robots.txt
+public/images/
