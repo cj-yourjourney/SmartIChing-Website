@@ -60,27 +60,32 @@ function HexagramMark({ lines, className = '' }) {
 }
 
 function FeatureImage({ src, label, alt }) {
-  return (
-    <div className="rounded-2xl bg-base-200 p-2 shadow-lg ring-1 ring-base-content/10">
-      {src ? (
+  if (src) {
+    return (
+      <div className="rounded-2xl bg-base-200 p-2 shadow-lg ring-1 ring-base-content/10">
+        {/* Static export serves pre-sized WebP from CloudFront, so next/image isn't needed */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt={alt}
           loading="lazy"
           className="w-full aspect-[4/3] rounded-xl object-cover"
         />
-      ) : (
-        <div
-          role="img"
-          aria-label={`Placeholder image: ${label}`}
-          className="w-full aspect-[4/3] rounded-xl border-2 border-dashed border-base-content/20 bg-base-100 flex flex-col items-center justify-center gap-3 text-base-content/40"
-        >
-          <span className="text-6xl leading-none" aria-hidden="true">
-            ䷀
-          </span>
-          <span className="text-sm">{label}</span>
-        </div>
-      )}
+      </div>
+    )
+  }
+  return (
+    <div className="rounded-2xl bg-base-200 p-2 shadow-lg ring-1 ring-base-content/10">
+      <div
+        role="img"
+        aria-label={`Placeholder image: ${label}`}
+        className="w-full aspect-[4/3] rounded-xl border-2 border-dashed border-base-content/20 bg-base-100 flex flex-col items-center justify-center gap-3 text-base-content/40"
+      >
+        <span className="text-6xl leading-none" aria-hidden="true">
+          ䷀
+        </span>
+        <span className="text-sm">{label}</span>
+      </div>
     </div>
   )
 }
@@ -176,7 +181,7 @@ export default function HomePage() {
             The I Ching is over 3,000 years old, and its language can be hard to
             follow. We use simple words to explain every hexagram, every line,
             and every reading. Our content is cross-referenced with classic
-            English translations, including Alfred Huang's{' '}
+            English translations, including Alfred Huang&apos;s{' '}
             <em>The Complete I Ching</em>.
           </Reason>
           <Reason title="An AI I Ching master">
