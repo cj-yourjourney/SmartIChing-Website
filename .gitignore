@@ -46,4 +46,4 @@ public/sitemap-0.xml
 public/robots.txtpublic/images/
 
 # images (served from S3/CloudFront)
-public/images/
+# public/images/
