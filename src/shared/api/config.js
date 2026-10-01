@@ -10,7 +10,12 @@ export const API_CONFIG = {
   ENDPOINTS: {
     LIST_HEXAGRAMS: '/api/smart-iching/hexagrams/',
     GENERATE_HEXAGRAM: '/api/smart-iching/generate/',
-    CAST_HEXAGRAM: '/api/smart-iching/cast/'
+    CAST_HEXAGRAM: '/api/smart-iching/cast/',
+    // Auth (login/refresh are the shared users endpoints)
+    REGISTER: '/api/smart-iching/auth/register/',
+    LOGIN: '/api/users/token/',
+    REFRESH_TOKEN: '/api/users/token/refresh/',
+    ME: '/api/smart-iching/me/'
   }
 }
 
