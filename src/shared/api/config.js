@@ -15,7 +15,12 @@ export const API_CONFIG = {
     REGISTER: '/api/smart-iching/auth/register/',
     LOGIN: '/api/users/token/',
     REFRESH_TOKEN: '/api/users/token/refresh/',
-    ME: '/api/smart-iching/me/'
+    ME: '/api/smart-iching/me/',
+    // Subscription + payment history (Stripe)
+    SUBSCRIPTION: '/api/smart-iching/subscription/',
+    CHECKOUT: '/api/smart-iching/subscription/checkout/',
+    PORTAL: '/api/smart-iching/subscription/portal/',
+    PAYMENTS: '/api/smart-iching/payments/'
   }
 }
 

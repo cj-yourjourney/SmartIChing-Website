@@ -23,6 +23,12 @@ const centerLinks = [
     label: 'Casting',
     subtitle: 'Ask & cast',
     audience: 'member'
+  },
+  {
+    href: ROUTES.ACCOUNT,
+    label: 'Account',
+    subtitle: 'Plan & billing',
+    audience: 'member'
   }
 ]
 

@@ -11,7 +11,8 @@ export const ROUTES = {
   HEXAGRAM: '/hexagram',
   CASTING: '/casting',
   SIGNIN: '/signin',
-  SIGNUP: '/signup'
+  SIGNUP: '/signup',
+  ACCOUNT: '/account'
 }
 
 // Helper function to check if a route is active
