@@ -1,9 +1,9 @@
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
 import { ROUTES } from '@/shared/constants/routes'
 import { logout } from '@/features/auth/state/authSlice'
-import { useEffect } from 'react'
 import { fetchSubscription } from '@/features/account/state/accountSlice'
 import SubscriptionBadge from './SubscriptionBadge'
 
@@ -58,16 +58,8 @@ export default function Navbar() {
   const router = useRouter()
   const dispatch = useDispatch()
   const { user, initialized } = useSelector((s) => s.auth)
-
-  const handleLogout = () => {
-    dispatch(logout())
-    router.push(ROUTES.HOME)
-  }
-
-  const audience = user ? 'member' : 'guest'
-  const visibleCenterLinks = centerLinks.filter((l) => l.audience === audience)
-
   const { subscription, subscriptionStatus } = useSelector((s) => s.account)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   // Load subscription state once per sign-in so the badge shows on every page.
   useEffect(() => {
@@ -76,13 +68,35 @@ export default function Navbar() {
     }
   }, [user, subscription, subscriptionStatus, dispatch])
 
+  // Close the mobile menu whenever the route changes.
+  useEffect(() => {
+    const close = () => setMenuOpen(false)
+    router.events.on('routeChangeStart', close)
+    return () => router.events.off('routeChangeStart', close)
+  }, [router.events])
+
+  const handleLogout = () => {
+    setMenuOpen(false)
+    dispatch(logout())
+    router.push(ROUTES.HOME)
+  }
+
+  const audience = user ? 'member' : 'guest'
+  const visibleCenterLinks = centerLinks.filter((l) => l.audience === audience)
   const lapsed = Boolean(subscription) && !subscription.has_access
 
   return (
-    <div className="navbar bg-base-100 border-b border-base-300">
-      {/* Far left: Home */}
+    <div className="navbar relative bg-base-100 border-b border-base-300 px-4">
+      {/* Left: site name on mobile (links home), Home link on desktop */}
       <div className="navbar-start">
-        <ul className="menu menu-horizontal">
+        <Link
+          href={ROUTES.HOME}
+          className="text-xl font-bold tracking-tight lg:hidden"
+        >
+          <span className="text-primary">Smart</span> I Ching
+        </Link>
+
+        <ul className="menu menu-horizontal hidden lg:flex">
           <li>
             <Link
               href={ROUTES.HOME}
@@ -96,10 +110,9 @@ export default function Navbar() {
         </ul>
       </div>
 
-      {/* Center: About for guests, Hexagram + Casting for signed-in users.
-          Rendered only after the stored session has been checked, so the
-          wrong set of links never flashes. */}
-      <div className="navbar-center">
+      {/* Center (desktop only). Rendered only after the stored session has
+          been checked, so the wrong set of links never flashes. */}
+      <div className="navbar-center hidden lg:flex">
         {initialized && (
           <ul className="menu menu-horizontal gap-2">
             {visibleCenterLinks.map(({ href, label, subtitle, gated }) => {
@@ -129,45 +142,121 @@ export default function Navbar() {
         )}
       </div>
 
-      
-      {/* Far right: auth */}
-      <div className="navbar-end">
+      {/* Right: trial badge, desktop auth, and the mobile Menu button */}
+      <div className="navbar-end gap-2">
         {initialized && (
-          <div className="flex items-center gap-2">
+          <>
             {user && <SubscriptionBadge />}
-            <ul className="menu menu-horizontal items-center gap-2">
-              {user ? (
-                <>
-                  <li>
-                    <span className="text-sm opacity-70">
-                      Hi, {user.first_name || 'there'}
-                    </span>
-                  </li>
-                  <li>
-                    <button type="button" onClick={handleLogout}>
-                      Sign out
-                    </button>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    <Link href={ROUTES.SIGNIN}>Sign in</Link>
-                  </li>
-                  <li>
-                    <Link
-                      href={ROUTES.SIGNUP}
-                      className="btn btn-primary btn-sm"
-                    >
-                      Sign up
-                    </Link>
-                  </li>
-                </>
-              )}
-            </ul>
-          </div>
+
+            {/* Desktop auth */}
+            {user ? (
+              <ul className="menu menu-horizontal items-center gap-2 hidden lg:flex">
+                <li>
+                  <span className="text-sm opacity-70">
+                    Hi, {user.first_name || 'there'}
+                  </span>
+                </li>
+                <li>
+                  <button type="button" onClick={handleLogout}>
+                    Sign out
+                  </button>
+                </li>
+              </ul>
+            ) : (
+              <div className="hidden lg:flex items-center gap-2">
+                <Link href={ROUTES.SIGNIN} className="btn btn-ghost btn-sm">
+                  Sign in
+                </Link>
+                <Link href={ROUTES.SIGNUP} className="btn btn-primary btn-sm">
+                  Sign up
+                </Link>
+              </div>
+            )}
+          </>
         )}
+
+        {/* Mobile menu button */}
+        <button
+          type="button"
+          className="btn btn-outline btn-sm gap-2 lg:hidden"
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-5 h-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d={
+                menuOpen
+                  ? 'M6 18L18 6M6 6l12 12'
+                  : 'M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5'
+              }
+            />
+          </svg>
+          Menu
+        </button>
       </div>
+
+      {/* Mobile menu panel */}
+      {menuOpen && (
+        <div className="absolute left-0 right-0 top-full z-30 border-b border-base-300 bg-base-100 shadow-lg lg:hidden">
+          <ul className="menu w-full p-2">
+            {user && (
+              <li className="menu-title">Hi, {user.first_name || 'there'}</li>
+            )}
+            <li>
+              <Link
+                href={ROUTES.HOME}
+                className={router.pathname === ROUTES.HOME ? 'active' : ''}
+              >
+                Home
+              </Link>
+            </li>
+            {initialized &&
+              visibleCenterLinks.map(({ href, label, subtitle, gated }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className={router.pathname === href ? 'active' : ''}
+                  >
+                    <span className="flex items-center gap-1">
+                      {label}
+                      {gated && lapsed && <LockIcon />}
+                    </span>
+                    {subtitle && (
+                      <span className="text-xs opacity-60">{subtitle}</span>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            {initialized && user && (
+              <li>
+                <button type="button" onClick={handleLogout}>
+                  Sign out
+                </button>
+              </li>
+            )}
+            {initialized && !user && (
+              <>
+                <li>
+                  <Link href={ROUTES.SIGNIN}>Sign in</Link>
+                </li>
+                <li>
+                  <Link href={ROUTES.SIGNUP}>Sign up</Link>
+                </li>
+              </>
+            )}
+          </ul>
+        </div>
+      )}
     </div>
   )
 }
