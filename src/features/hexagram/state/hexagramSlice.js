@@ -1,13 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { api, API_CONFIG } from '@/shared/api/config'
+import { authApi, isSubscriptionRequired } from '@/shared/api/authFetch'
+import { API_CONFIG } from '@/shared/api/config'
+
+const rejectPayload = (err) => ({
+  message: err.message,
+  subscriptionRequired: isSubscriptionRequired(err)
+})
 
 export const fetchHexagramList = createAsyncThunk(
   'hexagram/fetchHexagramList',
   async (_, { rejectWithValue }) => {
     try {
-      return await api.get(API_CONFIG.ENDPOINTS.LIST_HEXAGRAMS)
+      return await authApi.get(API_CONFIG.ENDPOINTS.LIST_HEXAGRAMS)
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue(rejectPayload(err))
     }
   }
 )
@@ -18,9 +24,11 @@ export const fetchHexagram = createAsyncThunk(
   'hexagram/fetchHexagram',
   async (number, { rejectWithValue }) => {
     try {
-      return await api.post(API_CONFIG.ENDPOINTS.GENERATE_HEXAGRAM, { number })
+      return await authApi.post(API_CONFIG.ENDPOINTS.GENERATE_HEXAGRAM, {
+        number
+      })
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue(rejectPayload(err))
     }
   }
 )
@@ -32,7 +40,8 @@ const initialState = {
   selectedNumber: 40,
   hexagram: null,
   loading: false,
-  error: null
+  error: null,
+  subscriptionRequired: false
 }
 
 const hexagramSlice = createSlice({
@@ -48,6 +57,7 @@ const hexagramSlice = createSlice({
       .addCase(fetchHexagramList.pending, (state) => {
         state.listLoading = true
         state.listError = null
+        state.subscriptionRequired = false
       })
       .addCase(fetchHexagramList.fulfilled, (state, action) => {
         state.listLoading = false
@@ -55,12 +65,17 @@ const hexagramSlice = createSlice({
       })
       .addCase(fetchHexagramList.rejected, (state, action) => {
         state.listLoading = false
-        state.listError = action.payload || 'Failed to load hexagram list'
+        state.listError =
+          action.payload?.message || 'Failed to load hexagram list'
+        state.subscriptionRequired = Boolean(
+          action.payload?.subscriptionRequired
+        )
       })
       .addCase(fetchHexagram.pending, (state) => {
         state.loading = true
         state.error = null
         state.hexagram = null
+        state.subscriptionRequired = false
       })
       .addCase(fetchHexagram.fulfilled, (state, action) => {
         state.loading = false
@@ -68,7 +83,10 @@ const hexagramSlice = createSlice({
       })
       .addCase(fetchHexagram.rejected, (state, action) => {
         state.loading = false
-        state.error = action.payload || 'Something went wrong'
+        state.error = action.payload?.message || 'Something went wrong'
+        state.subscriptionRequired = Boolean(
+          action.payload?.subscriptionRequired
+        )
       })
   }
 })

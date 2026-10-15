@@ -7,6 +7,9 @@ import {
 } from './state/hexagramSlice'
 import HexagramForm from './components/HexagramForm'
 import HexagramCard from './components/HexagramCard'
+import useAccessGate from '@/features/account/useAccessGate'
+import SubscriptionRequired from '@/features/account/components/SubscriptionRequired'
+
 
 export default function HexagramPage() {
   const dispatch = useDispatch()
@@ -17,17 +20,36 @@ export default function HexagramPage() {
     selectedNumber,
     hexagram,
     loading,
-    error
+    error,
+    subscriptionRequired
   } = useSelector((state) => state.hexagram)
 
+  const gate = useAccessGate()
+
   useEffect(() => {
-    if (hexagrams.length === 0) {
+    if (gate === 'allowed' && hexagrams.length === 0) {
       dispatch(fetchHexagramList())
     }
-  }, [dispatch, hexagrams.length])
+  }, [gate, dispatch, hexagrams.length])
 
   function handleGenerate() {
     dispatch(fetchHexagram(selectedNumber))
+  }
+
+  if (gate === 'loading') {
+    return (
+      <main data-theme="" className="min-h-screen bg-base-200 py-10 px-4">
+        <div className="max-w-2xl mx-auto skeleton h-40 w-full" />
+      </main>
+    )
+  }
+
+  if (gate === 'blocked' || subscriptionRequired) {
+    return (
+      <main data-theme="" className="min-h-screen bg-base-200 py-10 px-4">
+        <SubscriptionRequired />
+      </main>
+    )
   }
 
   return (

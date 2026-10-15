@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { api, API_CONFIG } from '@/shared/api/config'
+import { authApi, isSubscriptionRequired } from '@/shared/api/authFetch'
+import { API_CONFIG } from '@/shared/api/config'
 
 // Once all 6 lines are cast, the component sends the question + the raw
 // 6/7/8/9 sum for each line (bottom to top) to the backend. The backend
@@ -10,12 +11,15 @@ export const castHexagram = createAsyncThunk(
   'casting/castHexagram',
   async ({ question, lines }, { rejectWithValue }) => {
     try {
-      return await api.post(API_CONFIG.ENDPOINTS.CAST_HEXAGRAM, {
+      return await authApi.post(API_CONFIG.ENDPOINTS.CAST_HEXAGRAM, {
         question,
         lines
       })
     } catch (err) {
-      return rejectWithValue(err.message)
+      return rejectWithValue({
+        message: err.message,
+        subscriptionRequired: isSubscriptionRequired(err)
+      })
     }
   }
 )
@@ -40,6 +44,7 @@ const castingSlice = createSlice({
       state.lines = []
       state.result = null
       state.error = null
+      state.subscriptionRequired = false
     },
     // payload is the result of castLine() from utils/castLine.js —
     // randomness happens in the component before dispatch, keeping this
@@ -56,17 +61,21 @@ const castingSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(castHexagram.pending, (state) => {
-        state.phase = 'submitting'
-        state.error = null
-      })
       .addCase(castHexagram.fulfilled, (state, action) => {
         state.phase = 'complete'
         state.result = action.payload
       })
+      .addCase(castHexagram.pending, (state) => {
+        state.phase = 'submitting'
+        state.error = null
+        state.subscriptionRequired = false
+      })
       .addCase(castHexagram.rejected, (state, action) => {
         state.phase = 'error'
-        state.error = action.payload || 'Something went wrong'
+        state.error = action.payload?.message || 'Something went wrong'
+        state.subscriptionRequired = Boolean(
+          action.payload?.subscriptionRequired
+        )
       })
   }
 })

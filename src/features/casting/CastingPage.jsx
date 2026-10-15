@@ -12,12 +12,16 @@ import CoinToss from './components/CoinToss'
 import LineStack from './components/LineStack'
 import CastingResult from './components/CastingResult'
 
+import useAccessGate from '@/features/account/useAccessGate'
+import SubscriptionRequired from '@/features/account/components/SubscriptionRequired'
+
+
 export default function CastingPage() {
   const dispatch = useDispatch()
-  const { question, lines, phase, result, error } = useSelector(
-    (state) => state.casting
-  )
-
+  const { question, lines, phase, result, error, subscriptionRequired } =
+    useSelector((state) => state.casting)
+  const gate = useAccessGate()
+  
   // Once the 6th line is cast, send everything to the backend. Guarded by
   // phase === 'casting' so this only fires once per cast — as soon as the
   // thunk goes pending, phase flips to 'submitting' and this stops matching.
@@ -38,7 +42,21 @@ export default function CastingPage() {
   function handleReset() {
     dispatch(resetCasting())
   }
+  if (gate === 'loading') {
+    return (
+      <main data-theme="" className="min-h-screen bg-base-200 py-10 px-4">
+        <div className="max-w-2xl mx-auto skeleton h-40 w-full" />
+      </main>
+    )
+  }
 
+  if (gate === 'blocked' || subscriptionRequired) {
+    return (
+      <main data-theme="" className="min-h-screen bg-base-200 py-10 px-4">
+        <SubscriptionRequired />
+      </main>
+    )
+  }
   return (
     <main data-theme="" className="min-h-screen bg-base-200 py-10 px-4">
       <div className="max-w-2xl mx-auto space-y-6">

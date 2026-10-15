@@ -6,6 +6,9 @@ import { tokenStorage } from './tokenStorage'
 // one fail and log the user out.
 let refreshPromise = null
 
+export const isSubscriptionRequired = (err) =>
+  err?.status === 403 && err?.data?.code === 'subscription_required'
+
 const refreshAccessToken = () => {
   if (refreshPromise) return refreshPromise
 
