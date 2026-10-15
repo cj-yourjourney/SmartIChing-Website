@@ -12,7 +12,8 @@ export const ROUTES = {
   CASTING: '/casting',
   SIGNIN: '/signin',
   SIGNUP: '/signup',
-  ACCOUNT: '/account'
+  ACCOUNT: '/account',
+  JOURNEY: '/journey'
 }
 
 // Helper function to check if a route is active

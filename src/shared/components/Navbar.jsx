@@ -51,6 +51,12 @@ const centerLinks = [
     label: 'Account',
     subtitle: 'Plan & billing',
     audience: 'member'
+  },
+  {
+    href: ROUTES.JOURNEY,
+    label: 'Journey',
+    subtitle: 'Your progress',
+    audience: 'member'
   }
 ]
 
