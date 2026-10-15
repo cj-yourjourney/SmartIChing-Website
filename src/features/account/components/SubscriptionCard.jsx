@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { openBillingPortal } from '../state/accountSlice'
 import { PLAN_LABELS } from '../constants'
+import { daysLeft } from '../utils'
 
 const formatDate = (iso) =>
   iso
@@ -10,9 +11,6 @@ const formatDate = (iso) =>
         day: 'numeric'
       })
     : ''
-
-const daysLeft = (iso) =>
-  iso ? Math.max(0, Math.ceil((new Date(iso) - Date.now()) / 86400000)) : 0
 
 const BADGES = {
   trial: { className: 'badge-info', label: 'Free trial' },

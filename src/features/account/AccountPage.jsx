@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
 import { ROUTES } from '@/shared/constants/routes'
+import Link from 'next/link'
 import {
   clearAccountError,
   fetchPayments,
@@ -10,6 +11,7 @@ import {
 import SubscriptionCard from './components/SubscriptionCard'
 import PlanCards from './components/PlanCards'
 import PaymentHistoryList from './components/PaymentHistoryList'
+
 
 const MAX_POLLS = 10 // x 2s: how long we wait for Stripe's webhook after checkout
 
@@ -99,9 +101,20 @@ export default function AccountPage() {
                 : 'Payment received. Activating your subscription…'}
           </span>
           {(isActive || timedOut) && (
-            <button type="button" className="btn btn-sm" onClick={dismissBanner}>
-              Dismiss
-            </button>
+            <div className="flex gap-2">
+              {isActive && (
+                <Link href={ROUTES.CASTING} className="btn btn-sm btn-primary">
+                  Start casting
+                </Link>
+              )}
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={dismissBanner}
+              >
+                Dismiss
+              </button>
+            </div>
           )}
         </div>
       )}

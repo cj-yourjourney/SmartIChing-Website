@@ -10,7 +10,11 @@ export default function PlanCards({ title = 'Choose a plan' }) {
   return (
     <section>
       <h2 className="text-lg font-semibold mb-3">{title}</h2>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div
+        className={`grid gap-4 ${
+          PLANS.length > 1 ? 'sm:grid-cols-2' : 'max-w-md'
+        }`}
+      >
         {PLANS.map((plan) => (
           <div
             key={plan.id}

@@ -9,14 +9,6 @@ export const PLANS = [
     price: '$9.99',
     interval: 'per month',
     note: 'Cancel anytime',
-    highlight: false
-  },
-  {
-    id: 'yearly',
-    name: 'Yearly',
-    price: '$79.99',
-    interval: 'per year',
-    note: 'Best value',
     highlight: true
   }
 ]

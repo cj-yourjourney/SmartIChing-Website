@@ -11,17 +11,15 @@ import { castLine } from './utils/castLine'
 import CoinToss from './components/CoinToss'
 import LineStack from './components/LineStack'
 import CastingResult from './components/CastingResult'
-
 import useAccessGate from '@/features/account/useAccessGate'
 import SubscriptionRequired from '@/features/account/components/SubscriptionRequired'
-
 
 export default function CastingPage() {
   const dispatch = useDispatch()
   const { question, lines, phase, result, error, subscriptionRequired } =
     useSelector((state) => state.casting)
   const gate = useAccessGate()
-  
+
   // Once the 6th line is cast, send everything to the backend. Guarded by
   // phase === 'casting' so this only fires once per cast — as soon as the
   // thunk goes pending, phase flips to 'submitting' and this stops matching.
@@ -42,6 +40,7 @@ export default function CastingPage() {
   function handleReset() {
     dispatch(resetCasting())
   }
+
   if (gate === 'loading') {
     return (
       <main data-theme="" className="min-h-screen bg-base-200 py-10 px-4">
@@ -50,16 +49,19 @@ export default function CastingPage() {
     )
   }
 
-  if (gate === 'blocked' || subscriptionRequired) {
-    return (
-      <main data-theme="" className="min-h-screen bg-base-200 py-10 px-4">
-        <SubscriptionRequired />
-      </main>
-    )
-  }
+  // Blocked users still see the page, blurred, with the paywall on top.
+  const blocked = gate === 'blocked' || subscriptionRequired
+
   return (
-    <main data-theme="" className="min-h-screen bg-base-200 py-10 px-4">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <main
+      data-theme=""
+      className="relative min-h-screen bg-base-200 py-10 px-4"
+    >
+      <div
+        inert={blocked}
+        aria-hidden={blocked}
+        className="max-w-2xl mx-auto space-y-6"
+      >
         <h1 className="text-3xl font-bold text-center mb-2">
           Cast Your Hexagram
         </h1>
@@ -133,6 +135,8 @@ export default function CastingPage() {
           </>
         )}
       </div>
+
+      {blocked && <SubscriptionRequired />}
     </main>
   )
 }

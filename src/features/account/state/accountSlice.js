@@ -13,6 +13,10 @@ export const fetchSubscription = createAsyncThunk(
     } catch (err) {
       return rejectWithValue(parseApiError(err))
     }
+  },
+  {
+    condition: (_, { getState }) =>
+      getState().account.subscriptionStatus !== 'loading'
   }
 )
 
