@@ -1,5 +1,20 @@
+import Card from '@/shared/components/Card'
+import HexagramGlyph from '@/shared/components/HexagramGlyph'
+import { hexagramPattern } from '@/shared/utils/hexagram'
 import Section from './Section'
-import HexagramLines from './HexagramLines'
+import Passage from './Passage'
+
+function LineBar({ yang }) {
+  if (yang === undefined) return null
+  return yang ? (
+    <div className="h-1 w-10 rounded-full bg-base-content" />
+  ) : (
+    <div className="flex w-10 justify-between">
+      <div className="h-1 w-[44%] rounded-full bg-base-content" />
+      <div className="h-1 w-[44%] rounded-full bg-base-content" />
+    </div>
+  )
+}
 
 export default function HexagramCard({ hexagram }) {
   if (!hexagram) return null
@@ -22,76 +37,103 @@ export default function HexagramCard({ hexagram }) {
     sequence
   } = hexagram
 
+  const sortedLines = lines
+    ? [...lines].sort((a, b) => a.line_number - b.line_number)
+    : []
+
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <div className="card bg-base-100 shadow-xl border border-base-300">
-        <div className="card-body items-center text-center">
-          <div className="text-6xl font-serif">{chinese_name}</div>
-          <h2 className="card-title text-2xl font-serif mt-1">
-            ({number}) {pinyin_name} · {english_name}
-          </h2>
-          <div className="mt-4">
-            <HexagramLines
-              values={line_values}
-              size="sm"
-              labels={{
-                upper: `Upper: ${upper_trigram?.pinyin} · ${upper_trigram?.meaning}`,
-                lower: `Lower: ${lower_trigram?.pinyin} · ${lower_trigram?.meaning}`
-              }}
-            />
+    <div className="space-y-6">
+      <Card>
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+          <HexagramGlyph
+            pattern={hexagramPattern({ number, line_values })}
+            size="lg"
+            label={english_name}
+          />
+
+          <div className="min-w-0 flex-1">
+            <p className="text-sm opacity-60">Hexagram {number}</p>
+            <h2 className="font-serif text-5xl">{pinyin_name}</h2>
+            <p className="mt-1 text-lg opacity-70">{english_name}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {upper_trigram && (
+                <span className="badge badge-soft h-auto whitespace-normal py-1 text-left">
+                  Upper: {upper_trigram.pinyin} · {upper_trigram.meaning}
+                </span>
+              )}
+              {lower_trigram && (
+                <span className="badge badge-soft h-auto whitespace-normal py-1 text-left">
+                  Lower: {lower_trigram.pinyin} · {lower_trigram.meaning}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div
+            lang="zh"
+            className="font-serif text-8xl leading-none opacity-80 sm:ml-auto"
+          >
+            {chinese_name}
           </div>
         </div>
-      </div>
+      </Card>
 
-      <Section title="Overall Meaning" text={overall_meaning} />
+      <Section title="Overall Meaning" text={overall_meaning} lead />
 
       <Section title="The Image & the Name" text={name_and_structure} />
 
       <Section title="How We Got Here" text={sequence} />
 
-      <div className="card bg-base-100 shadow-xl border border-base-300">
-        <div className="card-body">
-          <h3 className="card-title font-serif">The Judgment</h3>
-          <p className="whitespace-pre-line leading-relaxed font-mono">
-            {judgment_text}
-          </p>
-          <p className="whitespace-pre-line leading-relaxed italic opacity-90 mt-3">
-            {judgment_commentary}
-          </p>
-        </div>
-      </div>
+      <Passage
+        title="The Judgment"
+        text={judgment_text}
+        commentary={judgment_commentary}
+      />
 
-      <div className="card bg-base-100 shadow-xl border border-base-300">
-        <div className="card-body">
-          <h3 className="card-title font-serif">The Image</h3>
-          <p className="whitespace-pre-line leading-relaxed font-mono">
-            {image_text}
-          </p>
-          <p className="whitespace-pre-line leading-relaxed italic opacity-90 mt-3">
-            {image_commentary}
-          </p>
-        </div>
-      </div>
+      <Passage
+        title="The Image"
+        text={image_text}
+        commentary={image_commentary}
+      />
 
-      <div className="card bg-base-100 shadow-xl border border-base-300">
-        <div className="card-body">
-          <h3 className="card-title font-serif">The Lines</h3>
-          <div className="space-y-4">
-            {lines?.map((line) => (
-              <div
+      {sortedLines.length > 0 && (
+        <Card
+          title="The Lines"
+          description="Six stages of change, from the bottom line up."
+        >
+          <ol className="divide-y divide-base-300">
+            {sortedLines.map((line) => (
+              <li
                 key={line.line_number}
-                className="border-l-4 border-primary pl-4"
+                className="flex gap-4 py-4 first:pt-0 last:pb-0"
               >
-                <div className="font-semibold">{line.line_name}</div>
-                <p className="whitespace-pre-line font-mono">{line.text}</p>
-                <p className="text-sm italic opacity-70 mt-1">
-                  {line.commentary}
-                </p>
-              </div>
+                <div className="flex w-14 shrink-0 flex-col items-center gap-2 pt-1">
+                  <span className="grid size-7 place-items-center rounded-full bg-base-200 text-xs">
+                    {line.line_number}
+                  </span>
+                  <LineBar
+                    yang={
+                      line_values
+                        ? Boolean(line_values[line.line_number - 1])
+                        : undefined
+                    }
+                  />
+                </div>
+
+                <div className="min-w-0">
+                  <div className="font-medium">{line.line_name}</div>
+                  <p className="mt-1 whitespace-pre-line font-serif text-lg">
+                    {line.text}
+                  </p>
+                  <p className="mt-2 whitespace-pre-line text-sm opacity-70">
+                    {line.commentary}
+                  </p>
+                </div>
+              </li>
             ))}
-          </div>
-        </div>
-      </div>
+          </ol>
+        </Card>
+      )}
     </div>
   )
 }

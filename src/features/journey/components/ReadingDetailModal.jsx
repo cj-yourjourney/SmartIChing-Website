@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { ArrowRight, X } from 'lucide-react'
-import HexagramGlyph from './HexagramGlyph'
+import HexagramGlyph from '../../../shared/components/HexagramGlyph'
 import { formatReadingDate } from '../utils'
 
 function describeLines(lines) {
@@ -19,7 +19,19 @@ export default function ReadingDetailModal({ reading, onClose }) {
   }, [reading, onClose])
 
   if (!reading) return null
-  const { question, primary, relating, changingLines, castAt, summary } = reading
+  const {
+    question,
+    primary,
+    relating,
+    changingLines,
+    castAt,
+    summary,
+    reading: fullReading,
+    guidance
+  } = reading
+
+  // Prefer the full reading; fall back to the short teaser for older rows.
+  const body = fullReading || summary
 
   return (
     <div
@@ -28,7 +40,7 @@ export default function ReadingDetailModal({ reading, onClose }) {
       aria-modal="true"
       aria-labelledby="reading-title"
     >
-      <div className="modal-box max-w-xl">
+      <div className="modal-box max-h-[90vh] max-w-xl overflow-y-auto">
         <button
           type="button"
           onClick={onClose}
@@ -43,7 +55,9 @@ export default function ReadingDetailModal({ reading, onClose }) {
           {question || 'Open reading'}
         </h3>
         {!question && (
-          <p className="text-sm opacity-60">You did not ask a question for this cast.</p>
+          <p className="text-sm opacity-60">
+            You did not ask a question for this cast.
+          </p>
         )}
 
         <div className="mt-8 flex items-center justify-center gap-8">
@@ -75,7 +89,9 @@ export default function ReadingDetailModal({ reading, onClose }) {
                   <div className="font-serif text-xl">
                     {relating.number}. {relating.pinyin_name}
                   </div>
-                  <div className="text-sm opacity-60">{relating.english_name}</div>
+                  <div className="text-sm opacity-60">
+                    {relating.english_name}
+                  </div>
                 </figcaption>
               </figure>
             </>
@@ -86,9 +102,22 @@ export default function ReadingDetailModal({ reading, onClose }) {
           {describeLines(changingLines)}
         </p>
 
-        <div className="mt-6 rounded-box bg-base-200 p-4">
-          <p className="max-w-prose">{summary}</p>
-        </div>
+        {body && (
+          <div className="mt-6 space-y-3 rounded-box bg-base-200 p-4">
+            {body.split(/\n{2,}/).map((para, i) => (
+              <p key={i} className="max-w-prose">
+                {para}
+              </p>
+            ))}
+          </div>
+        )}
+
+        {guidance && (
+          <div className="mt-4">
+            <h4 className="font-serif text-lg">Guidance</h4>
+            <p className="mt-1 max-w-prose opacity-80">{guidance}</p>
+          </div>
+        )}
 
         <div className="modal-action">
           <button type="button" className="btn" onClick={onClose}>

@@ -1,12 +1,15 @@
 import { useMemo } from 'react'
-import HexagramGlyph from './HexagramGlyph'
+import HexagramGlyph from '../../../shared/components/HexagramGlyph'
 
 // readings: the castings inside the selected range.
 export default function TopHexagrams({ readings }) {
   const top = useMemo(() => {
     const counts = new Map()
     readings.forEach(({ primary }) => {
-      const entry = counts.get(primary.number) || { hexagram: primary, count: 0 }
+      const entry = counts.get(primary.number) || {
+        hexagram: primary,
+        count: 0
+      }
       entry.count += 1
       counts.set(primary.number, entry)
     })

@@ -1,5 +1,5 @@
 import { ArrowRight } from 'lucide-react'
-import HexagramGlyph from './HexagramGlyph'
+import HexagramGlyph from '../../../shared/components/HexagramGlyph'
 import { formatReadingDate } from '../utils'
 
 export default function ReadingCard({ reading, onSelect }) {

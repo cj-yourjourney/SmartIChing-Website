@@ -1,3 +1,5 @@
+import Card from '@/shared/components/Card'
+
 const TOTAL = 64
 
 // reviewed: hexagram numbers the user has studied (all time).
@@ -7,14 +9,12 @@ export default function LearningProgress({ reviewed }) {
   const count = seen.size
 
   return (
-    <section className="rounded-box border border-base-300 bg-base-100 p-6">
-      <h2 className="font-serif text-2xl">Hexagrams studied</h2>
-      <p className="text-sm opacity-70">
-        {count} of {TOTAL} reviewed so far.
-      </p>
-
+    <Card
+      title="Hexagrams studied"
+      description={`${count} of ${TOTAL} reviewed so far.`}
+    >
       <progress
-        className="progress progress-primary mt-4 h-2 w-full"
+        className="progress progress-primary h-2 w-full"
         value={count}
         max={TOTAL}
         aria-label="Hexagrams reviewed"
@@ -39,6 +39,6 @@ export default function LearningProgress({ reviewed }) {
           )
         })}
       </div>
-    </section>
+    </Card>
   )
 }

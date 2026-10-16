@@ -47,3 +47,6 @@ public/robots.txtpublic/images/
 
 # images (served from S3/CloudFront)
 public/images/
+
+# design rules
+design-rules.md

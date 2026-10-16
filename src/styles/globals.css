@@ -92,3 +92,26 @@
   display: inline-block;
   animation: checkPop 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.8s both;
 }
+
+/* Coin toss: three full turns with a small hop, landing face up */
+@keyframes coinFlip {
+  0% {
+    transform: rotateY(0deg) translateY(0);
+  }
+  40% {
+    transform: rotateY(540deg) translateY(-14px);
+  }
+  100% {
+    transform: rotateY(1080deg) translateY(0);
+  }
+}
+
+.coin-flip {
+  animation: coinFlip 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coin-flip {
+    animation: none;
+  }
+}

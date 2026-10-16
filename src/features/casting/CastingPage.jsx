@@ -9,10 +9,27 @@ import {
 } from './state/castingSlice'
 import { castLine } from './utils/castLine'
 import CoinToss from './components/CoinToss'
-import LineStack from './components/LineStack'
 import CastingResult from './components/CastingResult'
+import Card from '@/shared/components/Card'
+import ErrorAlert from '@/shared/components/ErrorAlert'
+import HexagramGlyph from '@/shared/components/HexagramGlyph'
+import PageHeader from '@/shared/components/PageHeader'
+import PageShell from '@/shared/components/PageShell'
+import PageSkeleton from '@/shared/components/PageSkeleton'
 import useAccessGate from '@/features/account/useAccessGate'
 import SubscriptionRequired from '@/features/account/components/SubscriptionRequired'
+
+const EXAMPLES = [
+  'What should I focus on this week?',
+  'Is this the right time to make a change?',
+  'How can I approach a difficult conversation?'
+]
+
+const STEPS = [
+  'Ask a question, or leave it open for a general reading.',
+  'Toss three coins for each line, building the hexagram from the bottom up.',
+  'Read your hexagram, its changing lines, and where it is heading.'
+]
 
 export default function CastingPage() {
   const dispatch = useDispatch()
@@ -21,7 +38,7 @@ export default function CastingPage() {
   const gate = useAccessGate()
 
   // Once the 6th line is cast, send everything to the backend. Guarded by
-  // phase === 'casting' so this only fires once per cast — as soon as the
+  // phase === 'casting' so this only fires once per cast: as soon as the
   // thunk goes pending, phase flips to 'submitting' and this stops matching.
   useEffect(() => {
     if (phase === 'casting' && lines.length === 6) {
@@ -37,106 +54,183 @@ export default function CastingPage() {
     dispatch(lineCast(castLine()))
   }
 
+  function handleCastRest() {
+    for (let i = lines.length; i < 6; i++) dispatch(lineCast(castLine()))
+  }
+
   function handleReset() {
     dispatch(resetCasting())
   }
 
-  if (gate === 'loading') {
-    return (
-      <main data-theme="" className="min-h-screen bg-base-200 py-10 px-4">
-        <div className="max-w-2xl mx-auto skeleton h-40 w-full" />
-      </main>
-    )
-  }
+  if (gate === 'loading') return <PageSkeleton variant="split" />
 
   // Blocked users still see the page, blurred, with the paywall on top.
   const blocked = gate === 'blocked' || subscriptionRequired
 
+  // Hexagram being built, bottom to top; '.' draws an empty slot.
+  const pattern = Array.from(
+    { length: 6 },
+    (_, i) => lines[i]?.char ?? '.'
+  ).join('')
+  const changing = lines.flatMap((l, i) => (l.changing ? [i + 1] : []))
+  const submitting =
+    phase === 'submitting' || (phase === 'casting' && lines.length === 6)
+
   return (
-    <main
-      data-theme=""
-      className="relative min-h-screen bg-base-200 py-10 px-4"
-    >
-      <div
-        inert={blocked}
-        aria-hidden={blocked}
-        className="max-w-2xl mx-auto space-y-6"
-      >
-        <h1 className="text-3xl font-bold text-center mb-2">
-          Cast Your Hexagram
-        </h1>
+    <PageShell blocked={blocked} overlay={<SubscriptionRequired />}>
+      <PageHeader
+        title="Cast a hexagram"
+        description="Ask a question, toss three coins six times, and receive a reading for your situation."
+      />
 
-        {phase === 'idle' && (
-          <div className="card bg-base-100 shadow-xl border border-base-300">
-            <div className="card-body">
-              <label className="form-control">
-                <span className="label-text">Your question (optional)</span>
-                <textarea
-                  value={question}
-                  onChange={(e) => dispatch(setQuestion(e.target.value))}
-                  className="textarea textarea-bordered"
-                  placeholder="What would you like guidance on?"
-                />
-              </label>
-              <button onClick={handleStart} className="btn btn-primary mt-4">
-                Begin Casting
-              </button>
+      {phase === 'idle' && (
+        <div className="grid items-start gap-6 lg:grid-cols-3">
+          <Card
+            title="Your question"
+            description="Optional. A clear, specific question gets a more personal reading."
+            className="lg:col-span-2"
+          >
+            <label htmlFor="casting-question" className="sr-only">
+              Your question
+            </label>
+            <textarea
+              id="casting-question"
+              rows={4}
+              value={question}
+              onChange={(e) => dispatch(setQuestion(e.target.value))}
+              className="textarea w-full"
+              placeholder="What would you like guidance on?"
+            />
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {EXAMPLES.map((text) => (
+                <button
+                  key={text}
+                  type="button"
+                  onClick={() => dispatch(setQuestion(text))}
+                  className="btn btn-sm btn-ghost border-base-300"
+                >
+                  {text}
+                </button>
+              ))}
             </div>
-          </div>
-        )}
 
-        {(phase === 'casting' || phase === 'submitting') && (
-          <div className="card bg-base-100 shadow-xl border border-base-300">
-            <div className="card-body items-center">
-              <LineStack lines={lines} />
-
-              {phase === 'casting' && lines.length < 6 && (
-                <>
-                  <CoinToss lastCast={lines[lines.length - 1]} />
-                  <button
-                    onClick={handleCastLine}
-                    className="btn btn-primary mt-4"
-                  >
-                    Cast Line {lines.length + 1} of 6
-                  </button>
-                </>
-              )}
-
-              {phase === 'submitting' && (
-                <div className="flex flex-col items-center gap-2 mt-4">
-                  <span className="loading loading-spinner loading-md" />
-                  <p className="text-sm opacity-70">Consulting the oracle…</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {phase === 'error' && (
-          <div className="card bg-base-100 shadow-xl border border-error">
-            <div className="card-body">
-              <p className="text-error font-semibold">
-                Something went wrong getting your reading.
-              </p>
-              <p className="text-sm opacity-70">{error}</p>
-              <button onClick={handleReset} className="btn btn-outline mt-4">
-                Try Again
-              </button>
-            </div>
-          </div>
-        )}
-
-        {phase === 'complete' && result && (
-          <>
-            <CastingResult result={result} />
-            <button onClick={handleReset} className="btn btn-outline w-full">
-              Cast Again
+            <button
+              type="button"
+              onClick={handleStart}
+              className="btn btn-primary mt-6"
+            >
+              Begin casting
             </button>
-          </>
-        )}
-      </div>
+          </Card>
 
-      {blocked && <SubscriptionRequired />}
-    </main>
+          <Card title="How it works">
+            <ol className="space-y-4">
+              {STEPS.map((step, i) => (
+                <li key={step} className="flex gap-3">
+                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-base-200 text-xs">
+                    {i + 1}
+                  </span>
+                  <span className="text-sm opacity-80">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </Card>
+        </div>
+      )}
+
+      {phase !== 'idle' && phase !== 'error' && phase !== 'complete' && (
+        <div className="grid items-start gap-6 lg:grid-cols-3">
+          <Card
+            title="Your hexagram"
+            description={`${lines.length} of 6 lines cast, from the bottom up.`}
+          >
+            <div className="mt-2 flex justify-center">
+              <HexagramGlyph
+                pattern={pattern}
+                changing={changing}
+                size="xl"
+                label="Hexagram being cast"
+              />
+            </div>
+            <p className="mt-6 min-h-5 text-center text-xs opacity-60">
+              {changing.length > 0
+                ? 'Highlighted lines are changing lines.'
+                : ''}
+            </p>
+          </Card>
+
+          <Card
+            className="lg:col-span-2"
+            title={submitting ? undefined : `Line ${lines.length + 1} of 6`}
+            description={
+              submitting
+                ? undefined
+                : 'Each toss uses three coins. Heads counts 3, tails counts 2.'
+            }
+          >
+            {submitting ? (
+              <div
+                className="flex min-h-64 flex-col items-center justify-center gap-3"
+                aria-live="polite"
+              >
+                <span className="loading loading-spinner loading-md" />
+                <p className="font-serif text-xl">Consulting the oracle…</p>
+                <p className="text-sm opacity-70">This takes a few seconds.</p>
+              </div>
+            ) : (
+              <>
+                <CoinToss
+                  lastCast={lines[lines.length - 1]}
+                  castCount={lines.length}
+                />
+
+                <div className="mt-6 flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleCastLine}
+                    className="btn btn-primary"
+                  >
+                    Toss the coins
+                  </button>
+                  {lines.length < 5 && (
+                    <button
+                      type="button"
+                      onClick={handleCastRest}
+                      className="btn btn-ghost"
+                    >
+                      Cast the remaining lines
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {phase === 'error' && (
+        <ErrorAlert
+          title="Something went wrong getting your reading."
+          message={error}
+          onRetry={handleReset}
+        />
+      )}
+
+      {phase === 'complete' && result && (
+        <>
+          <CastingResult result={result} />
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="btn btn-outline"
+            >
+              Cast again
+            </button>
+          </div>
+        </>
+      )}
+    </PageShell>
   )
 }

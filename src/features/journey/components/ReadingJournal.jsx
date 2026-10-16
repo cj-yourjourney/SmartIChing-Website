@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ChevronDown, Search } from 'lucide-react'
 import { ROUTES } from '@/shared/constants/routes'
+import Card from '@/shared/components/Card'
+import EmptyState from '@/shared/components/EmptyState'
 import ReadingCard from './ReadingCard'
 import ReadingDetailModal from './ReadingDetailModal'
 
@@ -34,14 +36,10 @@ export default function ReadingJournal({ readings }) {
   const shown = filtered.slice(0, visible)
 
   return (
-    <section className="rounded-box border border-base-300 bg-base-100 p-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h2 className="font-serif text-2xl">Reading journal</h2>
-          <p className="text-sm opacity-70">
-            Every hexagram you have cast, newest first.
-          </p>
-        </div>
+    <Card
+      title="Reading journal"
+      description="Every hexagram you have cast, newest first."
+      action={
         <div role="tablist" className="tabs tabs-box tabs-sm">
           <button
             type="button"
@@ -68,9 +66,9 @@ export default function ReadingJournal({ readings }) {
             With changing lines
           </button>
         </div>
-      </div>
-
-      <label className="input mt-5 w-full">
+      }
+    >
+      <label className="input w-full">
         <Search className="size-4 opacity-50" aria-hidden="true" />
         <input
           type="search"
@@ -85,18 +83,20 @@ export default function ReadingJournal({ readings }) {
       </label>
 
       {readings.length === 0 ? (
-        <div className="mt-8 rounded-box bg-base-200 p-8 text-center">
-          <p className="font-serif text-xl">Your journal is empty</p>
-          <p className="mt-1 text-sm opacity-70">
-            Every reading you cast is saved here.
-          </p>
-          <Link href={ROUTES.CASTING} className="btn btn-primary btn-sm mt-4">
-            Cast your first hexagram
-          </Link>
-        </div>
+        <EmptyState
+          className="mt-6"
+          title="Your journal is empty"
+          description="Every reading you cast is saved here."
+          action={
+            <Link href={ROUTES.CASTING} className="btn btn-primary btn-sm">
+              Cast your first hexagram
+            </Link>
+          }
+        />
       ) : filtered.length === 0 ? (
         <p className="mt-8 text-center text-sm opacity-70">
-          No readings match your search. Try a different word or clear the filter.
+          No readings match your search. Try a different word or clear the
+          filter.
         </p>
       ) : (
         <>
@@ -121,7 +121,10 @@ export default function ReadingJournal({ readings }) {
         </>
       )}
 
-      <ReadingDetailModal reading={selected} onClose={() => setSelected(null)} />
-    </section>
+      <ReadingDetailModal
+        reading={selected}
+        onClose={() => setSelected(null)}
+      />
+    </Card>
   )
 }

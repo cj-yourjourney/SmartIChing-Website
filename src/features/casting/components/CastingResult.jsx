@@ -1,169 +1,167 @@
-import HexagramLines from '@/features/hexagram/components/HexagramLines'
+import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
+import Card from '@/shared/components/Card'
+import HexagramGlyph from '@/shared/components/HexagramGlyph'
+import { hexagramPattern } from '@/shared/utils/hexagram'
+
+function describeLines(lines) {
+  if (lines.length === 0) return 'No changing lines. This reading holds steady.'
+  if (lines.length === 1) return `Line ${lines[0]} is changing.`
+  const head = lines.slice(0, -1).join(', ')
+  return `Lines ${head} and ${lines[lines.length - 1]} are changing.`
+}
+
+function Figure({ hexagram, changing = [], caption }) {
+  return (
+    <figure className="flex flex-col items-center gap-3 text-center">
+      {caption && (
+        <p className="text-xs uppercase tracking-wide opacity-60">{caption}</p>
+      )}
+      <HexagramGlyph
+        pattern={hexagramPattern(hexagram)}
+        changing={changing}
+        size="lg"
+        label={hexagram.english_name}
+      />
+      <figcaption>
+        <div lang="zh" className="font-serif text-4xl leading-none opacity-80">
+          {hexagram.chinese_name}
+        </div>
+        <div className="mt-2 font-serif text-xl">
+          {hexagram.number}. {hexagram.pinyin_name}
+        </div>
+        <div className="text-sm opacity-60">{hexagram.english_name}</div>
+      </figcaption>
+    </figure>
+  )
+}
+
+function SourceBlock({ title, text, commentary }) {
+  if (!text && !commentary) return null
+  return (
+    <div>
+      <h4 className="font-serif text-lg">{title}</h4>
+      {text && (
+        <blockquote className="mt-2 border-l-2 border-primary/60 pl-4">
+          <p className="whitespace-pre-line font-serif text-lg">{text}</p>
+        </blockquote>
+      )}
+      {commentary && (
+        <p className="mt-2 whitespace-pre-line text-sm opacity-80">
+          {commentary}
+        </p>
+      )}
+    </div>
+  )
+}
 
 export default function CastingResult({ result }) {
   const {
+    question,
     hexagram,
     moving_lines,
     consulted_lines,
     resulting_hexagram,
-    interpretation
+    interpretation,
+    reading_id
   } = result
 
-  const movingCount = moving_lines.length
-
   return (
-    <div className="space-y-4">
-      {/* Header: hexagram identity */}
-      <div className="card bg-base-100 shadow-xl border border-base-300">
-        <div className="card-body items-center text-center">
-          <h3 className="card-title font-serif self-start">Your Hexagram</h3>
-          <div className="text-5xl font-serif">{hexagram.chinese_name}</div>
-          <p className="text-lg">
-            ({hexagram.number}) {hexagram.pinyin_name} · {hexagram.english_name}
-          </p>
-          <HexagramLines
-            values={hexagram.line_values}
-            size="sm"
-            labels={{
-              upper: `Upper: ${hexagram.upper_trigram?.pinyin} · ${hexagram.upper_trigram?.meaning}`,
-              lower: `Lower: ${hexagram.lower_trigram?.pinyin} · ${hexagram.lower_trigram?.meaning}`
-            }}
-          />
+    <div className="space-y-6">
+      <Card>
+        {question && (
+          <div className="mb-6">
+            <p className="text-sm opacity-60">Your question</p>
+            <p className="font-serif text-2xl">{question}</p>
+          </div>
+        )}
 
-          {movingCount > 0 ? (
-            <p className="text-sm opacity-70 mt-2">
-              {movingCount} changing line{movingCount > 1 ? 's' : ''} (line
-              {movingCount > 1 ? 's' : ''} {moving_lines.join(', ')})
-            </p>
-          ) : (
-            <p className="text-sm opacity-70 mt-2">
-              No changing lines — a settled reading.
-            </p>
-          )}
-
+        <div className="flex flex-wrap items-center justify-center gap-8">
+          <Figure hexagram={hexagram} changing={moving_lines} />
           {resulting_hexagram && (
-            <div className="w-full mt-4 pt-4 border-t border-base-300 flex flex-col items-center text-center gap-2">
-              <p className="text-xs uppercase tracking-wide opacity-60">
-                Moving Toward
-              </p>
-              <div className="text-3xl font-serif">
-                {resulting_hexagram.chinese_name}
-              </div>
-              <p className="text-base">
-                ({resulting_hexagram.number}) {resulting_hexagram.pinyin_name} ·{' '}
-                {resulting_hexagram.english_name}
-              </p>
-              <HexagramLines
-                values={resulting_hexagram.line_values}
-                size="sm"
-                labels={{
-                  upper: `Upper: ${resulting_hexagram.upper_trigram?.pinyin} · ${resulting_hexagram.upper_trigram?.meaning}`,
-                  lower: `Lower: ${resulting_hexagram.lower_trigram?.pinyin} · ${resulting_hexagram.lower_trigram?.meaning}`
-                }}
-              />
-            </div>
+            <>
+              <ArrowRight className="size-5 opacity-40" aria-hidden="true" />
+              <Figure hexagram={resulting_hexagram} caption="Moving toward" />
+            </>
           )}
         </div>
-      </div>
 
-      {/* The AI interpretation — the main event */}
-      <div className="card bg-base-100 shadow-xl border border-base-300">
-        <div className="card-body">
-          <h3 className="card-title font-serif">Reading</h3>
-          <p className="whitespace-pre-line leading-relaxed">
-            {interpretation.reading}
-          </p>
+        <p className="mt-6 text-center text-sm opacity-70">
+          {describeLines(moving_lines)}
+        </p>
+      </Card>
 
+      <div className="grid items-start gap-6 lg:grid-cols-3">
+        <Card title="Reading" className="lg:col-span-2">
+          <p className="whitespace-pre-line">{interpretation.reading}</p>
+        </Card>
+
+        <div className="space-y-6">
           {interpretation.guidance && (
-            <div className="mt-4 pt-4 border-t border-base-300">
-              <p className="text-sm font-semibold opacity-70 mb-1">Guidance</p>
-              <p className="whitespace-pre-line leading-relaxed">
+            <Card title="Guidance">
+              <p className="whitespace-pre-line opacity-80">
                 {interpretation.guidance}
               </p>
-            </div>
+            </Card>
+          )}
+
+          {reading_id && (
+            <Card
+              title="Saved to your Journey"
+              description="Find this reading again any time in your reading journal."
+            >
+              <Link href="/journey" className="btn btn-ghost btn-sm">
+                Open my Journey
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Link>
+            </Card>
           )}
         </div>
       </div>
 
-      {/* Reference detail — collapsed by default, for anyone who wants the source text */}
-      <div className="collapse collapse-arrow bg-base-100 shadow-xl border border-base-300">
-        <input type="checkbox" />
-        <div className="collapse-title font-serif text-lg">
-          Source Text &amp; Details
+      <div className="collapse collapse-arrow rounded-box border border-base-300 bg-base-100">
+        <input type="checkbox" aria-label="Show source text and details" />
+        <div className="collapse-title font-serif text-xl">
+          Source text &amp; details
         </div>
-        <div className="collapse-content space-y-4">
-          <div className="flex flex-col items-center text-center gap-2 pb-4 border-b border-base-300">
-            <div className="text-5xl font-serif">{hexagram.chinese_name}</div>
-            <p className="text-lg font-serif">
-              ({hexagram.number}) {hexagram.pinyin_name} ·{' '}
-              {hexagram.english_name}
-            </p>
-            <HexagramLines
-              values={hexagram.line_values}
-              size="sm"
-              labels={{
-                upper: `Upper: ${hexagram.upper_trigram?.pinyin} · ${hexagram.upper_trigram?.meaning}`,
-                lower: `Lower: ${hexagram.lower_trigram?.pinyin} · ${hexagram.lower_trigram?.meaning}`
-              }}
-            />
-          </div>
-
-          <div>
-            <p className="text-sm font-semibold opacity-70 mb-1">Judgment</p>
-            <p className="whitespace-pre-line text-sm">
-              {hexagram.judgment_text}
-            </p>
-            <p className="text-sm opacity-80 mt-2">
-              {hexagram.judgment_commentary}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-sm font-semibold opacity-70 mb-1">Image</p>
-            <p className="whitespace-pre-line text-sm">{hexagram.image_text}</p>
-            <p className="text-sm opacity-80 mt-2">
-              {hexagram.image_commentary}
-            </p>
-          </div>
+        <div className="collapse-content space-y-6">
+          <SourceBlock
+            title="The Judgment"
+            text={hexagram.judgment_text}
+            commentary={hexagram.judgment_commentary}
+          />
+          <SourceBlock
+            title="The Image"
+            text={hexagram.image_text}
+            commentary={hexagram.image_commentary}
+          />
 
           {consulted_lines.length > 0 && (
             <div>
-              <p className="text-sm font-semibold opacity-70 mb-1">
-                Line Text{consulted_lines.length > 1 ? 's' : ''} Consulted
-              </p>
-              {consulted_lines.map((line) => (
-                <div key={line.line_number} className="mb-3">
-                  <p className="text-sm font-medium">{line.line_name}</p>
-                  <p className="whitespace-pre-line text-sm">{line.text}</p>
-                  <p className="text-sm opacity-80 mt-1">{line.commentary}</p>
-                </div>
-              ))}
+              <h4 className="font-serif text-lg">
+                Line text{consulted_lines.length > 1 ? 's' : ''} consulted
+              </h4>
+              <div className="mt-2 space-y-4">
+                {consulted_lines.map((line) => (
+                  <div key={line.line_number}>
+                    <p className="font-medium">{line.line_name}</p>
+                    <p className="mt-1 whitespace-pre-line font-serif text-lg">
+                      {line.text}
+                    </p>
+                    <p className="mt-1 text-sm opacity-80">{line.commentary}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
           {resulting_hexagram && (
-            <div className="pt-2 border-t border-base-300">
-              <p className="text-sm font-semibold opacity-70 mb-2">
-                Resulting Hexagram
-              </p>
-              <div className="flex flex-col items-center text-center gap-2 mb-3">
-                <div className="text-3xl font-serif">
-                  {resulting_hexagram.chinese_name}
-                </div>
-                <p className="text-sm font-serif">
-                  ({resulting_hexagram.number}) {resulting_hexagram.pinyin_name}{' '}
-                  · {resulting_hexagram.english_name}
-                </p>
-                <HexagramLines
-                  values={resulting_hexagram.line_values}
-                  size="xs"
-                  labels={{
-                    upper: `Upper: ${resulting_hexagram.upper_trigram?.pinyin} · ${resulting_hexagram.upper_trigram?.meaning}`,
-                    lower: `Lower: ${resulting_hexagram.lower_trigram?.pinyin} · ${resulting_hexagram.lower_trigram?.meaning}`
-                  }}
-                />
-              </div>
-              <p className="text-sm opacity-80">
+            <div>
+              <h4 className="font-serif text-lg">
+                Moving toward: {resulting_hexagram.pinyin_name} ·{' '}
+                {resulting_hexagram.english_name}
+              </h4>
+              <p className="mt-2 text-sm opacity-80">
                 {resulting_hexagram.overall_meaning}
               </p>
             </div>

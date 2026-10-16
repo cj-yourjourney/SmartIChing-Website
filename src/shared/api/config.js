@@ -16,6 +16,9 @@ export const API_CONFIG = {
     LOGIN: '/api/users/token/',
     REFRESH_TOKEN: '/api/users/token/refresh/',
     ME: '/api/smart-iching/me/',
+     // My Journey
+    JOURNEY: '/api/smart-iching/journey/',
+    HEARTBEAT: '/api/smart-iching/activity/heartbeat/',
     // Subscription + payment history (Stripe)
     SUBSCRIPTION: '/api/smart-iching/subscription/',
     CHECKOUT: '/api/smart-iching/subscription/checkout/',

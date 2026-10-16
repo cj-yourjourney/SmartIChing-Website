@@ -1,17 +1,22 @@
-export default function Section({ title, text, mono = false, italic = false }) {
+import Card from '@/shared/components/Card'
+
+export default function Section({
+  title,
+  text,
+  mono = false,
+  italic = false,
+  lead = false
+}) {
   if (!text) return null
   return (
-    <div className="card bg-base-100 shadow-xl border border-base-300">
-      <div className="card-body">
-        <h3 className="card-title font-serif">{title}</h3>
-        <p
-          className={`whitespace-pre-line leading-relaxed ${mono ? 'font-mono' : ''} ${
-            italic ? 'italic opacity-90' : ''
-          }`}
-        >
-          {text}
-        </p>
-      </div>
-    </div>
+    <Card title={title}>
+      <p
+        className={`whitespace-pre-line ${lead ? 'text-lg' : 'opacity-80'} ${
+          mono ? 'font-mono' : ''
+        } ${italic ? 'italic' : ''}`}
+      >
+        {text}
+      </p>
+    </Card>
   )
 }
