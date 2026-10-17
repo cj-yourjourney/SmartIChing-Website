@@ -19,7 +19,7 @@ const NAV_LINKS = [
 ]
 
 // Soft highlight for the current page: light brand tint, not a solid fill.
-const ACTIVE_CLASS = 'bg-primary/10 font-medium text-primary'
+const ACTIVE_CLASS = 'bg-primary/10 font-semibold text-primary'
 
 function NavLabel({ label, locked }) {
   return (
