@@ -1,11 +1,9 @@
+import Card from '@/shared/components/Card'
+import EmptyState from '@/shared/components/EmptyState'
+import ErrorAlert from '@/shared/components/ErrorAlert'
+import StatusBadge from '@/shared/components/StatusBadge'
 import { PLAN_LABELS } from '../constants'
-
-const formatDate = (iso) =>
-  new Date(iso).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
+import { formatDate } from '../utils'
 
 const formatMoney = (amount, currency) =>
   new Intl.NumberFormat(undefined, {
@@ -13,19 +11,20 @@ const formatMoney = (amount, currency) =>
     currency: (currency || 'usd').toUpperCase()
   }).format(Number(amount))
 
-export default function PaymentHistoryList({ payments, status }) {
+export default function PaymentHistoryList({ payments, status, onRetry }) {
   return (
-    <section>
-      <h2 className="text-lg font-semibold mb-3">Payment history</h2>
-
+    <Card title="Payment history">
       {status === 'loading' && payments.length === 0 ? (
         <div className="skeleton h-24 w-full" />
       ) : status === 'failed' && payments.length === 0 ? (
-        <p className="opacity-70">Could not load your payments.</p>
+        <ErrorAlert message="Could not load your payments." onRetry={onRetry} />
       ) : payments.length === 0 ? (
-        <p className="opacity-70">No payments yet.</p>
+        <EmptyState
+          title="No payments yet"
+          description="Receipts for your payments will show up here."
+        />
       ) : (
-        <div className="overflow-x-auto border border-base-300 rounded-box bg-base-100">
+        <div className="overflow-x-auto">
           <table className="table">
             <thead>
               <tr>
@@ -33,7 +32,9 @@ export default function PaymentHistoryList({ payments, status }) {
                 <th>Plan</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th />
+                <th>
+                  <span className="sr-only">Receipts</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -43,15 +44,13 @@ export default function PaymentHistoryList({ payments, status }) {
                   <td>{PLAN_LABELS[p.plan] || p.description || '—'}</td>
                   <td>{formatMoney(p.amount, p.currency)}</td>
                   <td>
-                    <span
-                      className={`badge ${
-                        p.status === 'paid' ? 'badge-success' : 'badge-error'
-                      }`}
+                    <StatusBadge
+                      tone={p.status === 'paid' ? 'success' : 'error'}
                     >
                       {p.status === 'paid' ? 'Paid' : 'Failed'}
-                    </span>
+                    </StatusBadge>
                   </td>
-                  <td className="text-right whitespace-nowrap">
+                  <td className="whitespace-nowrap text-right">
                     {p.hosted_invoice_url && (
                       <a
                         href={p.hosted_invoice_url}
@@ -79,6 +78,6 @@ export default function PaymentHistoryList({ payments, status }) {
           </table>
         </div>
       )}
-    </section>
+    </Card>
   )
 }

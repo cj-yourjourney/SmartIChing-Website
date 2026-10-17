@@ -1,4 +1,5 @@
 import PageShell from './PageShell'
+import SplitLayout from './SplitLayout'
 
 // Full-page loading placeholder.
 //   variant="default": title + two wide blocks
@@ -8,10 +9,12 @@ export default function PageSkeleton({ variant = 'default' }) {
     <PageShell>
       <div className="skeleton h-14 w-64" />
       {variant === 'split' ? (
-        <div className="grid gap-6 lg:grid-cols-3">
+        <SplitLayout
+          asideFirst
+          aside={<div className="skeleton h-96 w-full" />}
+        >
           <div className="skeleton h-96 w-full" />
-          <div className="skeleton h-96 w-full lg:col-span-2" />
-        </div>
+        </SplitLayout>
       ) : (
         <>
           <div className="skeleton h-28 w-full" />

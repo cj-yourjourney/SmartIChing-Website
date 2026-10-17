@@ -4,18 +4,6 @@ import { hexagramPattern } from '@/shared/utils/hexagram'
 import Section from './Section'
 import Passage from './Passage'
 
-function LineBar({ yang }) {
-  if (yang === undefined) return null
-  return yang ? (
-    <div className="h-1 w-10 rounded-full bg-base-content" />
-  ) : (
-    <div className="flex w-10 justify-between">
-      <div className="h-1 w-[44%] rounded-full bg-base-content" />
-      <div className="h-1 w-[44%] rounded-full bg-base-content" />
-    </div>
-  )
-}
-
 export default function HexagramCard({ hexagram }) {
   if (!hexagram) return null
 
@@ -102,35 +90,40 @@ export default function HexagramCard({ hexagram }) {
           description="Six stages of change, from the bottom line up."
         >
           <ol className="divide-y divide-base-300">
-            {sortedLines.map((line) => (
-              <li
-                key={line.line_number}
-                className="flex gap-4 py-4 first:pt-0 last:pb-0"
-              >
-                <div className="flex w-14 shrink-0 flex-col items-center gap-2 pt-1">
-                  <span className="grid size-7 place-items-center rounded-full bg-base-200 text-xs">
-                    {line.line_number}
-                  </span>
-                  <LineBar
-                    yang={
-                      line_values
-                        ? Boolean(line_values[line.line_number - 1])
-                        : undefined
-                    }
-                  />
-                </div>
+            {sortedLines.map((line) => {
+              const yang = line_values
+                ? Boolean(line_values[line.line_number - 1])
+                : undefined
+              return (
+                <li
+                  key={line.line_number}
+                  className="flex gap-4 py-4 first:pt-0 last:pb-0"
+                >
+                  <div className="flex w-14 shrink-0 flex-col items-center gap-2 pt-1">
+                    <span className="grid size-7 place-items-center rounded-full bg-base-200 text-xs">
+                      {line.line_number}
+                    </span>
+                    {yang !== undefined && (
+                      <HexagramGlyph
+                        pattern={yang ? 'y' : 'n'}
+                        size="md"
+                        label={yang ? 'Solid line' : 'Broken line'}
+                      />
+                    )}
+                  </div>
 
-                <div className="min-w-0">
-                  <div className="font-medium">{line.line_name}</div>
-                  <p className="mt-1 whitespace-pre-line font-serif text-lg">
-                    {line.text}
-                  </p>
-                  <p className="mt-2 whitespace-pre-line text-sm opacity-70">
-                    {line.commentary}
-                  </p>
-                </div>
-              </li>
-            ))}
+                  <div className="min-w-0">
+                    <div className="font-medium">{line.line_name}</div>
+                    <p className="mt-1 whitespace-pre-line font-serif text-lg">
+                      {line.text}
+                    </p>
+                    <p className="mt-2 whitespace-pre-line text-sm opacity-70">
+                      {line.commentary}
+                    </p>
+                  </div>
+                </li>
+              )
+            })}
           </ol>
         </Card>
       )}

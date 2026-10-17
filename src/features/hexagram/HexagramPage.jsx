@@ -7,13 +7,12 @@ import {
 } from './state/hexagramSlice'
 import HexagramPicker from './components/HexagramPicker'
 import HexagramCard from './components/HexagramCard'
-import PageShell from '@/shared/components/PageShell'
 import PageHeader from '@/shared/components/PageHeader'
-import PageSkeleton from '@/shared/components/PageSkeleton'
+import SplitLayout from '@/shared/components/SplitLayout'
 import EmptyState from '@/shared/components/EmptyState'
 import ErrorAlert from '@/shared/components/ErrorAlert'
 import useAccessGate from '@/features/account/useAccessGate'
-import SubscriptionRequired from '@/features/account/components/SubscriptionRequired'
+import GatedPage from '@/features/account/components/GatedPage'
 
 function ContentSkeleton() {
   return (
@@ -59,20 +58,17 @@ export default function HexagramPage() {
     }
   }
 
-  if (gate === 'loading') return <PageSkeleton variant="split" />
-
-  // Blocked users still see the page, blurred, with the paywall on top.
-  const blocked = gate === 'blocked' || subscriptionRequired
-
   return (
-    <PageShell blocked={blocked} overlay={<SubscriptionRequired />}>
+    <GatedPage skeleton="split" subscriptionRequired={subscriptionRequired}>
       <PageHeader
         title="Hexagrams"
         description="Browse all 64 hexagrams: their judgment, their image and the meaning of every line."
       />
 
-      <div className="grid items-start gap-6 lg:grid-cols-3">
-        <div className="lg:sticky lg:top-6">
+      <SplitLayout
+        asideFirst
+        sticky
+        aside={
           <HexagramPicker
             hexagrams={hexagrams}
             selectedNumber={selectedNumber}
@@ -81,13 +77,9 @@ export default function HexagramPage() {
             listLoading={listLoading}
             listError={listError}
           />
-        </div>
-
-        <div
-          ref={contentRef}
-          aria-live="polite"
-          className="scroll-mt-6 lg:col-span-2"
-        >
+        }
+      >
+        <div ref={contentRef} aria-live="polite" className="scroll-mt-6">
           {loading ? (
             <ContentSkeleton />
           ) : error ? (
@@ -105,7 +97,7 @@ export default function HexagramPage() {
             />
           )}
         </div>
-      </div>
-    </PageShell>
+      </SplitLayout>
+    </GatedPage>
   )
 }

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import Card from '@/shared/components/Card'
 import HexagramGlyph from '@/shared/components/HexagramGlyph'
+import SplitLayout from '@/shared/components/SplitLayout'
 import { hexagramPattern } from '@/shared/utils/hexagram'
 
 function describeLines(lines) {
@@ -91,33 +92,35 @@ export default function CastingResult({ result }) {
         </p>
       </Card>
 
-      <div className="grid items-start gap-6 lg:grid-cols-3">
-        <Card title="Reading" className="lg:col-span-2">
+      <SplitLayout
+        aside={
+          <>
+            {interpretation.guidance && (
+              <Card title="Guidance">
+                <p className="whitespace-pre-line opacity-80">
+                  {interpretation.guidance}
+                </p>
+              </Card>
+            )}
+
+            {reading_id && (
+              <Card
+                title="Saved to your Journey"
+                description="Find this reading again any time in your reading journal."
+              >
+                <Link href="/journey" className="btn btn-ghost btn-sm">
+                  Open my Journey
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                </Link>
+              </Card>
+            )}
+          </>
+        }
+      >
+        <Card title="Reading">
           <p className="whitespace-pre-line">{interpretation.reading}</p>
         </Card>
-
-        <div className="space-y-6">
-          {interpretation.guidance && (
-            <Card title="Guidance">
-              <p className="whitespace-pre-line opacity-80">
-                {interpretation.guidance}
-              </p>
-            </Card>
-          )}
-
-          {reading_id && (
-            <Card
-              title="Saved to your Journey"
-              description="Find this reading again any time in your reading journal."
-            >
-              <Link href="/journey" className="btn btn-ghost btn-sm">
-                Open my Journey
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </Link>
-            </Card>
-          )}
-        </div>
-      </div>
+      </SplitLayout>
 
       <div className="collapse collapse-arrow rounded-box border border-base-300 bg-base-100">
         <input type="checkbox" aria-label="Show source text and details" />

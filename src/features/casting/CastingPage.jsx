@@ -14,10 +14,8 @@ import Card from '@/shared/components/Card'
 import ErrorAlert from '@/shared/components/ErrorAlert'
 import HexagramGlyph from '@/shared/components/HexagramGlyph'
 import PageHeader from '@/shared/components/PageHeader'
-import PageShell from '@/shared/components/PageShell'
-import PageSkeleton from '@/shared/components/PageSkeleton'
-import useAccessGate from '@/features/account/useAccessGate'
-import SubscriptionRequired from '@/features/account/components/SubscriptionRequired'
+import SplitLayout from '@/shared/components/SplitLayout'
+import GatedPage from '@/features/account/components/GatedPage'
 
 const EXAMPLES = [
   'What should I focus on this week?',
@@ -35,7 +33,6 @@ export default function CastingPage() {
   const dispatch = useDispatch()
   const { question, lines, phase, result, error, subscriptionRequired } =
     useSelector((state) => state.casting)
-  const gate = useAccessGate()
 
   // Once the 6th line is cast, send everything to the backend. Guarded by
   // phase === 'casting' so this only fires once per cast: as soon as the
@@ -62,11 +59,6 @@ export default function CastingPage() {
     dispatch(resetCasting())
   }
 
-  if (gate === 'loading') return <PageSkeleton variant="split" />
-
-  // Blocked users still see the page, blurred, with the paywall on top.
-  const blocked = gate === 'blocked' || subscriptionRequired
-
   // Hexagram being built, bottom to top; '.' draws an empty slot.
   const pattern = Array.from(
     { length: 6 },
@@ -77,18 +69,32 @@ export default function CastingPage() {
     phase === 'submitting' || (phase === 'casting' && lines.length === 6)
 
   return (
-    <PageShell blocked={blocked} overlay={<SubscriptionRequired />}>
+    <GatedPage skeleton="split" subscriptionRequired={subscriptionRequired}>
       <PageHeader
         title="Cast a hexagram"
         description="Ask a question, toss three coins six times, and receive a reading for your situation."
       />
 
       {phase === 'idle' && (
-        <div className="grid items-start gap-6 lg:grid-cols-3">
+        <SplitLayout
+          aside={
+            <Card title="How it works">
+              <ol className="space-y-4">
+                {STEPS.map((step, i) => (
+                  <li key={step} className="flex gap-3">
+                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-base-200 text-xs">
+                      {i + 1}
+                    </span>
+                    <span className="text-sm opacity-80">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </Card>
+          }
+        >
           <Card
             title="Your question"
             description="Optional. A clear, specific question gets a more personal reading."
-            className="lg:col-span-2"
           >
             <label htmlFor="casting-question" className="sr-only">
               Your question
@@ -123,45 +129,34 @@ export default function CastingPage() {
               Begin casting
             </button>
           </Card>
-
-          <Card title="How it works">
-            <ol className="space-y-4">
-              {STEPS.map((step, i) => (
-                <li key={step} className="flex gap-3">
-                  <span className="grid size-7 shrink-0 place-items-center rounded-full bg-base-200 text-xs">
-                    {i + 1}
-                  </span>
-                  <span className="text-sm opacity-80">{step}</span>
-                </li>
-              ))}
-            </ol>
-          </Card>
-        </div>
+        </SplitLayout>
       )}
 
       {phase !== 'idle' && phase !== 'error' && phase !== 'complete' && (
-        <div className="grid items-start gap-6 lg:grid-cols-3">
+        <SplitLayout
+          asideFirst
+          aside={
+            <Card
+              title="Your hexagram"
+              description={`${lines.length} of 6 lines cast, from the bottom up.`}
+            >
+              <div className="mt-2 flex justify-center">
+                <HexagramGlyph
+                  pattern={pattern}
+                  changing={changing}
+                  size="xl"
+                  label="Hexagram being cast"
+                />
+              </div>
+              <p className="mt-6 min-h-5 text-center text-xs opacity-60">
+                {changing.length > 0
+                  ? 'Highlighted lines are changing lines.'
+                  : ''}
+              </p>
+            </Card>
+          }
+        >
           <Card
-            title="Your hexagram"
-            description={`${lines.length} of 6 lines cast, from the bottom up.`}
-          >
-            <div className="mt-2 flex justify-center">
-              <HexagramGlyph
-                pattern={pattern}
-                changing={changing}
-                size="xl"
-                label="Hexagram being cast"
-              />
-            </div>
-            <p className="mt-6 min-h-5 text-center text-xs opacity-60">
-              {changing.length > 0
-                ? 'Highlighted lines are changing lines.'
-                : ''}
-            </p>
-          </Card>
-
-          <Card
-            className="lg:col-span-2"
             title={submitting ? undefined : `Line ${lines.length + 1} of 6`}
             description={
               submitting
@@ -206,7 +201,7 @@ export default function CastingPage() {
               </>
             )}
           </Card>
-        </div>
+        </SplitLayout>
       )}
 
       {phase === 'error' && (
@@ -231,6 +226,6 @@ export default function CastingPage() {
           </div>
         </>
       )}
-    </PageShell>
+    </GatedPage>
   )
 }

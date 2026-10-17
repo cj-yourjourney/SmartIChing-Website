@@ -2,62 +2,68 @@ import { useDispatch, useSelector } from 'react-redux'
 import { startCheckout } from '../state/accountSlice'
 import { PLANS } from '../constants'
 
-export default function PlanCards({ title = 'Choose a plan' }) {
+// Plan tiles with their checkout buttons. No card around them, so it can sit
+// inside a Card (Account page) or inside the paywall dialog.
+//   title  optional heading; leave it out when the parent Card has a title
+export default function PlanCards({ title }) {
   const dispatch = useDispatch()
   const checkoutPlan = useSelector((s) => s.account.checkoutPlan)
   const busy = checkoutPlan !== null
 
   return (
-    <section>
-      <h2 className="text-lg font-semibold mb-3">{title}</h2>
-      <div
-        className={`grid gap-4 ${
-          PLANS.length > 1 ? 'sm:grid-cols-2' : 'max-w-md'
-        }`}
-      >
+    <div>
+      {title && <h3 className="font-serif text-lg">{title}</h3>}
+
+      <div className={`grid gap-4 ${title ? 'mt-3' : ''}`}>
         {PLANS.map((plan) => (
           <div
             key={plan.id}
-            className={`card bg-base-100 border ${
-              plan.highlight ? 'border-primary' : 'border-base-300'
+            className={`rounded-box border p-4 ${
+              plan.highlight
+                ? 'border-primary bg-primary/10'
+                : 'border-base-300'
             }`}
           >
-            <div className="card-body">
-              <div className="flex items-center justify-between">
-                <h3 className="card-title">{plan.name}</h3>
-                {plan.highlight && (
-                  <span className="badge badge-primary">{plan.note}</span>
-                )}
-              </div>
-              <p>
-                <span className="text-3xl font-bold">{plan.price}</span>{' '}
-                <span className="opacity-60">{plan.interval}</span>
-              </p>
-              {!plan.highlight && (
-                <p className="text-sm opacity-60">{plan.note}</p>
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="font-serif text-lg">{plan.name}</h3>
+              {plan.highlight && (
+                <span className="badge badge-primary badge-soft badge-sm">
+                  {plan.note}
+                </span>
               )}
-              <div className="card-actions mt-2">
-                <button
-                  type="button"
-                  className={`btn w-full ${
-                    plan.highlight ? 'btn-primary' : 'btn-outline'
-                  }`}
-                  onClick={() => dispatch(startCheckout(plan.id))}
-                  disabled={busy}
-                >
-                  {checkoutPlan === plan.id
-                    ? 'Redirecting to checkout…'
-                    : `Subscribe ${plan.name.toLowerCase()}`}
-                </button>
-              </div>
             </div>
+
+            <p className="mt-2">
+              <span className="font-serif text-4xl">{plan.price}</span>{' '}
+              <span className="text-sm opacity-60">{plan.interval}</span>
+            </p>
+            {!plan.highlight && (
+              <p className="mt-1 text-sm opacity-60">{plan.note}</p>
+            )}
+
+            <button
+              type="button"
+              className={`btn mt-4 w-full ${
+                plan.highlight ? 'btn-primary' : 'btn-outline'
+              }`}
+              onClick={() => dispatch(startCheckout(plan.id))}
+              disabled={busy}
+            >
+              {checkoutPlan === plan.id && (
+                <span className="loading loading-spinner" />
+              )}
+              {checkoutPlan === plan.id
+                ? 'Redirecting to checkout…'
+                : `Subscribe ${plan.name.toLowerCase()}`}
+            </button>
           </div>
         ))}
       </div>
-      <p className="text-xs opacity-60 mt-3">
+
+      <p className="mt-3 text-xs opacity-60">
         Secure payment is handled by Stripe. You can add a promo code on the
         checkout page.
       </p>
-    </section>
+    </div>
   )
 }

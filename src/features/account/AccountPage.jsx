@@ -1,8 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
+import Link from 'next/link'
 import { useDispatch, useSelector } from 'react-redux'
 import { ROUTES } from '@/shared/constants/routes'
-import Link from 'next/link'
+import ErrorAlert from '@/shared/components/ErrorAlert'
+import PageHeader from '@/shared/components/PageHeader'
+import PageShell from '@/shared/components/PageShell'
+import PageSkeleton from '@/shared/components/PageSkeleton'
+import SplitLayout from '@/shared/components/SplitLayout'
+import Card from '@/shared/components/Card'
 import {
   clearAccountError,
   fetchPayments,
@@ -11,7 +17,6 @@ import {
 import SubscriptionCard from './components/SubscriptionCard'
 import PlanCards from './components/PlanCards'
 import PaymentHistoryList from './components/PaymentHistoryList'
-
 
 const MAX_POLLS = 10 // x 2s: how long we wait for Stripe's webhook after checkout
 
@@ -67,33 +72,28 @@ export default function AccountPage() {
   const dismissBanner = () =>
     router.replace(ROUTES.ACCOUNT, undefined, { shallow: true })
 
-  if (!initialized || !user) {
-    return (
-      <main className="max-w-3xl mx-auto p-6">
-        <div className="skeleton h-40 w-full" />
-      </main>
-    )
-  }
+  if (!initialized || !user) return <PageSkeleton />
 
   const status = subscription?.status
   const showPlans = subscription && !['active', 'past_due'].includes(status)
+  const activating = !isActive && !timedOut
 
   return (
-    <main className="max-w-3xl mx-auto p-6 space-y-8">
-      <header>
-        <h1 className="text-2xl font-bold">Account</h1>
-        <p className="opacity-70">
-          {user.first_name ? `${user.first_name} · ` : ''}
-          {user.email}
-        </p>
-      </header>
+    <PageShell>
+      <PageHeader
+        title="Account"
+        description={`${user.first_name ? `${user.first_name} · ` : ''}${user.email}`}
+      />
 
       {checkoutResult === 'success' && (
         <div
-          role="alert"
+          role="status"
           className={`alert ${isActive ? 'alert-success' : 'alert-info'}`}
         >
-          <span>
+          <span className="flex items-center gap-2">
+            {activating && (
+              <span className="loading loading-spinner loading-sm" />
+            )}
             {isActive
               ? "You're subscribed. Thank you!"
               : timedOut
@@ -120,7 +120,7 @@ export default function AccountPage() {
       )}
 
       {checkoutResult === 'canceled' && (
-        <div role="alert" className="alert">
+        <div role="status" className="alert">
           <span>Checkout was canceled. You haven't been charged.</span>
           <button type="button" className="btn btn-sm" onClick={dismissBanner}>
             Dismiss
@@ -129,32 +129,38 @@ export default function AccountPage() {
       )}
 
       {error && (
-        <div role="alert" className="alert alert-error">
-          <span>{error}</span>
-          <button
-            type="button"
-            className="btn btn-sm"
-            onClick={() => dispatch(clearAccountError())}
-          >
-            Dismiss
-          </button>
-        </div>
+        <ErrorAlert
+          message={error}
+          onRetry={() => dispatch(clearAccountError())}
+          retryLabel="Dismiss"
+        />
       )}
 
-      {!subscription && subscriptionStatus !== 'failed' ? (
-        <div className="skeleton h-32 w-full" />
-      ) : subscription ? (
-        <>
-          <SubscriptionCard subscription={subscription} />
-          {showPlans && (
-            <PlanCards
-              title={status === 'trial' ? 'Subscribe now' : 'Choose a plan'}
-            />
-          )}
-        </>
-      ) : null}
-
-      <PaymentHistoryList payments={payments} status={paymentsStatus} />
-    </main>
+      <SplitLayout
+        asideFirst
+        aside={
+          !subscription && subscriptionStatus !== 'failed' ? (
+            <div className="skeleton h-32 w-full" />
+          ) : subscription ? (
+            <>
+              <SubscriptionCard subscription={subscription} />
+              {showPlans && (
+                <Card
+                  title={status === 'trial' ? 'Subscribe now' : 'Choose a plan'}
+                >
+                  <PlanCards />
+                </Card>
+              )}
+            </>
+          ) : null
+        }
+      >
+        <PaymentHistoryList
+          payments={payments}
+          status={paymentsStatus}
+          onRetry={() => dispatch(fetchPayments())}
+        />
+      </SplitLayout>
+    </PageShell>
   )
 }
