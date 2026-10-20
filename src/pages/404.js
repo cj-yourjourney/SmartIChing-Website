@@ -7,11 +7,10 @@ const YANG = '#60a5fa'
 const YIN = '#ea580c'
 
 function Hexagram({ lines }) {
-  // Render top line first, so reverse the bottom-to-top array.
   const topDown = [...lines].reverse()
   return (
     <div
-      className="flex flex-col gap-2"
+      className="flex flex-col gap-3"
       role="img"
       aria-label="Hexagram 56, The Wanderer"
     >
@@ -19,17 +18,17 @@ function Hexagram({ lines }) {
         isYang ? (
           <span
             key={i}
-            className="block h-2.5 w-24 rounded-sm"
+            className="block h-3 w-32 rounded-sm"
             style={{ background: YANG }}
           />
         ) : (
-          <span key={i} className="flex w-24 justify-between">
+          <span key={i} className="flex w-32 justify-between">
             <span
-              className="block h-2.5 w-[42%] rounded-sm"
+              className="block h-3 w-[42%] rounded-sm"
               style={{ background: YIN }}
             />
             <span
-              className="block h-2.5 w-[42%] rounded-sm"
+              className="block h-3 w-[42%] rounded-sm"
               style={{ background: YIN }}
             />
           </span>
@@ -41,27 +40,20 @@ function Hexagram({ lines }) {
 
 export default function NotFoundPage() {
   return (
-    <main className="mx-auto flex min-h-[70vh] max-w-xl flex-col items-center justify-center px-6 py-16 text-center">
+    <main className="mx-auto flex min-h-[75vh] max-w-2xl flex-col items-center justify-center px-6 py-16 text-center">
       <Hexagram lines={WANDERER} />
 
-      <h1 className="mt-10 font-serif text-3xl font-semibold text-base-content sm:text-4xl">
+      <h1 className="mt-14 font-serif text-5xl font-semibold text-base-content sm:text-6xl">
         Page not found
       </h1>
 
-      <p className="mt-4 max-w-md text-base leading-relaxed text-base-content/70">
-        There is nothing at this address. The link may be mistyped or the page
-        may have moved.
+      <p className="mt-5 text-xl text-base-content/60">
+        There is nothing at this address.
       </p>
 
-      <div className="mt-8">
-        <Link href="/" className="btn btn-primary">
-          Back to home
-        </Link>
-      </div>
-
-      <p className="mt-10 font-serif text-sm italic text-base-content/50">
-        Hexagram 56, The Wanderer
-      </p>
+      <Link href="/" className="btn btn-primary btn-lg mt-10 px-10 text-lg">
+        Back to home
+      </Link>
     </main>
   )
 }
