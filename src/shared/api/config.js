@@ -16,14 +16,16 @@ export const API_CONFIG = {
     LOGIN: '/api/users/token/',
     REFRESH_TOKEN: '/api/users/token/refresh/',
     ME: '/api/smart-iching/me/',
-     // My Journey
+    // My Journey
     JOURNEY: '/api/smart-iching/journey/',
     HEARTBEAT: '/api/smart-iching/activity/heartbeat/',
     // Subscription + payment history (Stripe)
     SUBSCRIPTION: '/api/smart-iching/subscription/',
     CHECKOUT: '/api/smart-iching/subscription/checkout/',
     PORTAL: '/api/smart-iching/subscription/portal/',
-    PAYMENTS: '/api/smart-iching/payments/'
+    PAYMENTS: '/api/smart-iching/payments/',
+    // Public: is a sale running? (no sign-in needed)
+    SALE: '/api/smart-iching/sale/'
   }
 }
 

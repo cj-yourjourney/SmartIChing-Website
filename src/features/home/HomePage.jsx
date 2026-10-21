@@ -1,4 +1,9 @@
+import { useSelector } from 'react-redux'
 import { ROUTES } from '@/shared/constants/routes'
+import { PLANS } from '@/shared/constants/plans'
+import PlanTile from '@/shared/components/PlanTile'
+import SaleNotice from '@/shared/components/SaleNotice'
+import useSale from '@/shared/utils/useSale'
 
 // Swap `src` for a real image when ready, e.g. '/images/home/hexagrams.webp'
 // (served from the CloudFront images/* behavior). With no src, a placeholder shows.
@@ -122,6 +127,49 @@ function Feature({ title, text, cta, href, image, flip }) {
   )
 }
 
+// Same two plans and sale prices as the Account page (shared PlanTile + useSale).
+// Signed-out visitors go to sign-up (which starts the free trial); people who
+// are already signed in go to their account, where they can subscribe.
+function Pricing() {
+  const user = useSelector((s) => s.auth.user)
+  const { onSale, sale, saleFor } = useSale()
+  const href = user ? ROUTES.ACCOUNT : ROUTES.SIGNUP
+  const cta = user ? 'Choose a plan' : 'Start your free trial'
+
+  return (
+    <section id="pricing" className="max-w-3xl w-full pb-28">
+      <h2 className="text-3xl md:text-4xl font-serif font-bold tracking-tight text-center">
+        Pricing
+      </h2>
+      <p className="text-base-content/70 text-center mt-3 mb-10">
+        Try everything free first, with no card needed. Pick a plan when you are
+        ready.
+      </p>
+
+      {onSale && <SaleNotice sale={sale} className="mb-6" />}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {PLANS.map((plan) => (
+          <PlanTile key={plan.id} plan={plan} sale={saleFor(plan)}>
+            <a
+              href={href}
+              className={`btn mt-4 w-full rounded-full ${
+                plan.highlight ? 'btn-primary' : 'btn-outline'
+              }`}
+            >
+              {cta}
+            </a>
+          </PlanTile>
+        ))}
+      </div>
+
+      <p className="text-xs text-base-content/60 text-center mt-4">
+        Secure payment is handled by Stripe. Cancel anytime.
+      </p>
+    </section>
+  )
+}
+
 export default function HomePage() {
   return (
     <main className="min-h-screen flex flex-col items-center bg-base-100 text-base-content px-6">
@@ -211,6 +259,9 @@ export default function HomePage() {
           image={IMAGES.casting}
         />
       </section>
+
+      {/* Pricing */}
+      <Pricing />
 
       {/* Closing call to action */}
       <section className="max-w-3xl w-full text-center rounded-3xl bg-base-200 px-6 py-14 mb-24 shadow-sm">

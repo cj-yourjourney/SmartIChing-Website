@@ -1,4 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
+import PlanTile from '@/shared/components/PlanTile'
+import SaleNotice from '@/shared/components/SaleNotice'
+import useSale from '@/shared/utils/useSale'
 import { startCheckout } from '../state/accountSlice'
 import { PLANS } from '../constants'
 
@@ -9,41 +12,17 @@ export default function PlanCards({ title }) {
   const dispatch = useDispatch()
   const checkoutPlan = useSelector((s) => s.account.checkoutPlan)
   const busy = checkoutPlan !== null
+  const { onSale, sale, saleFor } = useSale()
 
   return (
     <div>
       {title && <h3 className="font-serif text-lg">{title}</h3>}
 
-      <div className={`grid gap-4 ${title ? 'mt-3' : ''}`}>
+      {onSale && <SaleNotice sale={sale} className={title ? 'mt-3' : ''} />}
+
+      <div className={`grid gap-4 ${title || onSale ? 'mt-3' : ''}`}>
         {PLANS.map((plan) => (
-          <div
-            key={plan.id}
-            className={`rounded-box border p-4 ${
-              plan.highlight
-                ? 'border-primary bg-primary/10'
-                : 'border-base-300'
-            }`}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="font-serif text-lg">{plan.name}</h3>
-              {plan.badge && (
-                <span className="badge badge-primary badge-soft badge-sm">
-                  {plan.badge}
-                </span>
-              )}
-            </div>
-
-            <p className="mt-2">
-              <span className="font-serif text-4xl">{plan.price}</span>{' '}
-              <span className="text-sm opacity-60">{plan.interval}</span>
-            </p>
-            {plan.perMonth && (
-              <p className="mt-1 text-sm font-medium text-primary">
-                {plan.perMonth}
-              </p>
-            )}
-            <p className="mt-1 text-sm opacity-60">{plan.note}</p>
-
+          <PlanTile key={plan.id} plan={plan} sale={saleFor(plan)}>
             <button
               type="button"
               className={`btn mt-4 w-full ${
@@ -59,13 +38,14 @@ export default function PlanCards({ title }) {
                 ? 'Redirecting to checkout…'
                 : `Subscribe ${plan.name.toLowerCase()}`}
             </button>
-          </div>
+          </PlanTile>
         ))}
       </div>
 
       <p className="mt-3 text-xs opacity-60">
-        Secure payment is handled by Stripe. You can add a promo code on the
-        checkout page.
+        {onSale
+          ? 'Secure payment is handled by Stripe.'
+          : 'Secure payment is handled by Stripe. You can add a promo code on the checkout page.'}
       </p>
     </div>
   )

@@ -4,6 +4,7 @@ import castingReducer from '@/features/casting/state/castingSlice'
 import authReducer from '@/features/auth/state/authSlice'
 import accountReducer from '@/features/account/state/accountSlice'
 import journeyReducer from '@/features/journey/state/journeySlice'
+import saleReducer from '@/shared/redux/saleSlice'
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     casting: castingReducer,
     auth: authReducer,
     account: accountReducer,
-    journey: journeyReducer
+    journey: journeyReducer,
+    sale: saleReducer
   }
 })

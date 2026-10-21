@@ -5,6 +5,7 @@ import { store } from '@/shared/redux/store'
 import AuthProvider from '@/features/auth/AuthProvider'
 import ActivityHeartbeat from '@/features/journey/ActivityHeartbeat'
 import Navbar from '@/shared/components/Navbar'
+import SaleBanner from '@/shared/components/SaleBanner'
 import '@/styles/globals.css'
 
 export default function App({ Component, pageProps }) {
@@ -24,6 +25,7 @@ export default function App({ Component, pageProps }) {
     <Provider store={store}>
       <AuthProvider>
         <ActivityHeartbeat />
+        <SaleBanner />
         <Navbar />
         <Component {...pageProps} />
       </AuthProvider>
