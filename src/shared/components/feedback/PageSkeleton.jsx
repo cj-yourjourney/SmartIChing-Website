@@ -1,5 +1,5 @@
-import PageShell from './PageShell'
-import SplitLayout from './SplitLayout'
+import PageShell from '@/shared/components/layout/PageShell'
+import SplitLayout from '@/shared/components/layout/SplitLayout'
 
 // Full-page loading placeholder.
 //   variant="default": title + two wide blocks

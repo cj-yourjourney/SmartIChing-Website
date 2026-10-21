@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import HexagramGlyph from '../../../shared/components/HexagramGlyph'
+import HexagramGlyph from '@/shared/components/hexagram/HexagramGlyph'
 
 // readings: the castings inside the selected range.
 export default function TopHexagrams({ readings }) {

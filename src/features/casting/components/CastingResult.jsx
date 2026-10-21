@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import Card from '@/shared/components/Card'
-import HexagramGlyph from '@/shared/components/HexagramGlyph'
-import SplitLayout from '@/shared/components/SplitLayout'
+import Card from '@/shared/components/layout/Card'
+import HexagramGlyph from '@/shared/components/hexagram/HexagramGlyph'
+import SplitLayout from '@/shared/components/layout/SplitLayout'
 import { hexagramPattern } from '@/shared/utils/hexagram'
 
 function describeLines(lines) {

@@ -1,8 +1,8 @@
 import { useSelector } from 'react-redux'
 import { ROUTES } from '@/shared/constants/routes'
 import { PLANS } from '@/shared/constants/plans'
-import PlanTile from '@/shared/components/PlanTile'
-import SaleNotice from '@/shared/components/SaleNotice'
+import PlanTile from '@/shared/components/billing/PlanTile'
+import SaleNotice from '@/shared/components/billing/SaleNotice'
 import useSale from '@/shared/utils/useSale'
 
 // Swap `src` for a real image when ready, e.g. '/images/home/hexagrams.webp'

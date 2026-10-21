@@ -1,7 +1,7 @@
-import Card from '@/shared/components/Card'
-import EmptyState from '@/shared/components/EmptyState'
-import ErrorAlert from '@/shared/components/ErrorAlert'
-import StatusBadge from '@/shared/components/StatusBadge'
+import Card from '@/shared/components/layout/Card'
+import EmptyState from '@/shared/components/feedback/EmptyState'
+import ErrorAlert from '@/shared/components/feedback/ErrorAlert'
+import StatusBadge from '@/shared/components/feedback/StatusBadge'
 import { PLAN_LABELS } from '../constants'
 import { formatDate } from '../utils'
 

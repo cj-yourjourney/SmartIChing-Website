@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
-import PlanTile from '@/shared/components/PlanTile'
-import SaleNotice from '@/shared/components/SaleNotice'
+import PlanTile from '@/shared/components/billing/PlanTile'
+import SaleNotice from '@/shared/components/billing/SaleNotice'
 import useSale from '@/shared/utils/useSale'
 import { startCheckout } from '../state/accountSlice'
 import { PLANS } from '../constants'

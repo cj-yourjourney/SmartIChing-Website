@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
-import Card from '@/shared/components/Card'
-import ErrorAlert from '@/shared/components/ErrorAlert'
-import HexagramGlyph from '@/shared/components/HexagramGlyph'
+import Card from '@/shared/components/layout/Card'
+import ErrorAlert from '@/shared/components/feedback/ErrorAlert'
+import HexagramGlyph from '@/shared/components/hexagram/HexagramGlyph'
 import { hexagramPattern } from '@/shared/utils/hexagram'
 
 export default function HexagramPicker({

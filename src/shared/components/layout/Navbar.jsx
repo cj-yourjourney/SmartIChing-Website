@@ -6,7 +6,7 @@ import { Lock, Menu, X } from 'lucide-react'
 import { ROUTES } from '@/shared/constants/routes'
 import { logout } from '@/features/auth/state/authSlice'
 import { fetchSubscription } from '@/features/account/state/accountSlice'
-import SubscriptionBadge from './SubscriptionBadge'
+import SubscriptionBadge from '@/shared/components/billing/SubscriptionBadge'
 
 // Links in the bar, in order. `audience` decides who sees each one;
 // `gated` links show a lock when the subscription has lapsed.

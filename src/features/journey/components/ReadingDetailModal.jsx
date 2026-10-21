@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { ArrowRight, X } from 'lucide-react'
-import HexagramGlyph from '../../../shared/components/HexagramGlyph'
+import HexagramGlyph from '@/shared/components/hexagram/HexagramGlyph'
 import { formatReadingDate } from '../utils'
 
 function describeLines(lines) {

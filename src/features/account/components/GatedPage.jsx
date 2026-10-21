@@ -1,5 +1,5 @@
-import PageShell from '@/shared/components/PageShell'
-import PageSkeleton from '@/shared/components/PageSkeleton'
+import PageShell from '@/shared/components/layout/PageShell'
+import PageSkeleton from '@/shared/components/feedback/PageSkeleton'
 import useAccessGate from '../useAccessGate'
 import SubscriptionRequired from './SubscriptionRequired'
 

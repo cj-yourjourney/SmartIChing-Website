@@ -3,12 +3,12 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useDispatch, useSelector } from 'react-redux'
 import { ROUTES } from '@/shared/constants/routes'
-import ErrorAlert from '@/shared/components/ErrorAlert'
-import PageHeader from '@/shared/components/PageHeader'
-import PageShell from '@/shared/components/PageShell'
-import PageSkeleton from '@/shared/components/PageSkeleton'
-import SplitLayout from '@/shared/components/SplitLayout'
-import Card from '@/shared/components/Card'
+import ErrorAlert from '@/shared/components/feedback/ErrorAlert'
+import PageHeader from '@/shared/components/layout/PageHeader'
+import PageShell from '@/shared/components/layout/PageShell'
+import PageSkeleton from '@/shared/components/feedback/PageSkeleton'
+import SplitLayout from '@/shared/components/layout/SplitLayout'
+import Card from '@/shared/components/layout/Card'
 import {
   clearAccountError,
   fetchPayments,

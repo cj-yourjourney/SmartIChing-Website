@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { Clock } from 'lucide-react'
 import { ROUTES } from '@/shared/constants/routes'
 import { daysLeft } from '@/features/account/utils'
-import StatusBadge from './StatusBadge'
+import StatusBadge from '@/shared/components/feedback/StatusBadge'
 
 export default function SubscriptionBadge() {
   const subscription = useSelector((s) => s.account.subscription)

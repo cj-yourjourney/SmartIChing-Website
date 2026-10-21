@@ -1,4 +1,4 @@
-import Card from '@/shared/components/Card'
+import Card from '@/shared/components/layout/Card'
 
 // A classical text (Judgment / Image) set as a quote, with its commentary below.
 export default function Passage({ title, text, commentary }) {

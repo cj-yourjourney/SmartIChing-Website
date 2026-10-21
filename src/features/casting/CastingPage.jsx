@@ -10,11 +10,11 @@ import {
 import { castLine } from './utils/castLine'
 import CoinToss from './components/CoinToss'
 import CastingResult from './components/CastingResult'
-import Card from '@/shared/components/Card'
-import ErrorAlert from '@/shared/components/ErrorAlert'
-import HexagramGlyph from '@/shared/components/HexagramGlyph'
-import PageHeader from '@/shared/components/PageHeader'
-import SplitLayout from '@/shared/components/SplitLayout'
+import Card from '@/shared/components/layout/Card'
+import ErrorAlert from '@/shared/components/feedback/ErrorAlert'
+import HexagramGlyph from '@/shared/components/hexagram/HexagramGlyph'
+import PageHeader from '@/shared/components/layout/PageHeader'
+import SplitLayout from '@/shared/components/layout/SplitLayout'
 import GatedPage from '@/features/account/components/GatedPage'
 
 const EXAMPLES = [
