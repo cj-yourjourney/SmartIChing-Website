@@ -26,9 +26,9 @@ export default function PlanCards({ title }) {
           >
             <div className="flex items-center justify-between gap-3">
               <h3 className="font-serif text-lg">{plan.name}</h3>
-              {plan.highlight && (
+              {plan.badge && (
                 <span className="badge badge-primary badge-soft badge-sm">
-                  {plan.note}
+                  {plan.badge}
                 </span>
               )}
             </div>
@@ -37,9 +37,12 @@ export default function PlanCards({ title }) {
               <span className="font-serif text-4xl">{plan.price}</span>{' '}
               <span className="text-sm opacity-60">{plan.interval}</span>
             </p>
-            {!plan.highlight && (
-              <p className="mt-1 text-sm opacity-60">{plan.note}</p>
+            {plan.perMonth && (
+              <p className="mt-1 text-sm font-medium text-primary">
+                {plan.perMonth}
+              </p>
             )}
+            <p className="mt-1 text-sm opacity-60">{plan.note}</p>
 
             <button
               type="button"
