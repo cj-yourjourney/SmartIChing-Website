@@ -15,6 +15,8 @@ export const API_CONFIG = {
     REGISTER: '/api/smart-iching/auth/register/',
     LOGIN: '/api/users/token/',
     REFRESH_TOKEN: '/api/users/token/refresh/',
+    VERIFY_EMAIL: '/api/smart-iching/auth/verify-email/',
+    RESEND_VERIFICATION: '/api/smart-iching/auth/resend-verification/',
     ME: '/api/smart-iching/me/',
     // My Journey
     JOURNEY: '/api/smart-iching/journey/',

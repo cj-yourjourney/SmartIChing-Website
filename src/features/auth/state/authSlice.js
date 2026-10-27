@@ -46,18 +46,28 @@ export const parseApiError = (err) => {
 
 const fetchMe = () => authApi.get(ENDPOINTS.ME)
 
-// Sign up: the backend creates the user + SmartIChingProfile and returns tokens.
+// Sign up: the backend creates the user + SmartIChingProfile (unverified),
+// emails the verification link, and returns tokens so the "check your email"
+// page can offer a working Resend button.
 export const registerUser = createAsyncThunk(
   'auth/register',
-  async ({ first_name, email, password }, { rejectWithValue }) => {
+  async (
+    { first_name, email, password, password_confirm },
+    { rejectWithValue }
+  ) => {
     try {
       const data = await api.post(ENDPOINTS.REGISTER, {
         first_name,
         email: email.trim().toLowerCase(),
-        password
+        password,
+        password_confirm
       })
       tokenStorage.set({ access: data.access, refresh: data.refresh })
-      return data.user
+      return {
+        user: data.user,
+        emailVerified: data.email_verified === true,
+        verificationEmailSent: data.verification_email_sent !== false
+      }
     } catch (err) {
       return rejectWithValue(parseApiError(err))
     }
@@ -83,7 +93,7 @@ export const loginUser = createAsyncThunk(
 
     try {
       const me = await fetchMe()
-      return me.user
+      return { user: me.user, emailVerified: me.email_verified === true }
     } catch (err) {
       tokenStorage.clear()
       return rejectWithValue(parseApiError(err))
@@ -97,15 +107,76 @@ export const loadSession = createAsyncThunk('auth/loadSession', async () => {
 
   try {
     const me = await fetchMe()
-    return me.user
+    return { user: me.user, emailVerified: me.email_verified === true }
   } catch {
     tokenStorage.clear()
     return null
   }
 })
 
+// Re-check verification state (used when the user comes back to the
+// "check your email" tab after clicking the link in another tab/device).
+export const refreshVerification = createAsyncThunk(
+  'auth/refreshVerification',
+  async () => {
+    const me = await fetchMe()
+    return { user: me.user, emailVerified: me.email_verified === true }
+  }
+)
+
+// Consume the token from the emailed link. First use returns tokens, so the
+// user is signed in and verified in one step. A replayed link returns no
+// tokens; in that case we only refresh state if this browser is already signed in.
+export const verifyEmail = createAsyncThunk(
+  'auth/verifyEmail',
+  async (token, { rejectWithValue }) => {
+    let data
+    try {
+      data = await api.post(ENDPOINTS.VERIFY_EMAIL, { token })
+    } catch (err) {
+      return rejectWithValue({
+        ...parseApiError(err),
+        code: err?.data?.code || null
+      })
+    }
+
+    if (data.access && data.refresh) {
+      tokenStorage.set({ access: data.access, refresh: data.refresh })
+      return { user: data.user, emailVerified: true, alreadyVerified: false }
+    }
+
+    let user = null
+    let emailVerified = true
+    if (tokenStorage.getAccess() || tokenStorage.getRefresh()) {
+      try {
+        const me = await fetchMe()
+        user = me.user
+        emailVerified = me.email_verified === true
+      } catch {
+        // stale tokens: treat as signed out
+      }
+    }
+    return { user, emailVerified, alreadyVerified: true }
+  }
+)
+
+// Send the verification email again (requires a signed-in session).
+export const resendVerification = createAsyncThunk(
+  'auth/resendVerification',
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await authApi.post(ENDPOINTS.RESEND_VERIFICATION)
+      return { alreadyVerified: data.already_verified === true }
+    } catch (err) {
+      return rejectWithValue(parseApiError(err))
+    }
+  }
+)
+
 const initialState = {
   user: null,
+  emailVerified: null, // null = unknown, true/false once /me/ or register answered
+  verificationEmailSent: true, // false if Resend failed during sign up
   initialized: false, // true once the stored session has been checked
   status: 'idle', // 'idle' | 'loading'
   error: null,
@@ -118,6 +189,8 @@ const authSlice = createSlice({
   reducers: {
     loggedOut(state) {
       state.user = null
+      state.emailVerified = null
+      state.verificationEmailSent = true
       state.status = 'idle'
       state.error = null
       state.fieldErrors = {}
@@ -130,11 +203,28 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loadSession.fulfilled, (state, action) => {
-        state.user = action.payload
+        state.user = action.payload?.user ?? null
+        state.emailVerified = action.payload
+          ? action.payload.emailVerified
+          : null
         state.initialized = true
       })
       .addCase(loadSession.rejected, (state) => {
         state.initialized = true
+      })
+      .addCase(refreshVerification.fulfilled, (state, action) => {
+        state.user = action.payload.user
+        state.emailVerified = action.payload.emailVerified
+      })
+      .addCase(verifyEmail.fulfilled, (state, action) => {
+        if (action.payload.user) {
+          state.user = action.payload.user
+          state.emailVerified = action.payload.emailVerified
+          state.initialized = true
+        }
+      })
+      .addCase(resendVerification.fulfilled, (state, action) => {
+        if (action.payload.alreadyVerified) state.emailVerified = true
       })
 
     for (const thunk of [registerUser, loginUser]) {
@@ -146,7 +236,10 @@ const authSlice = createSlice({
         })
         .addCase(thunk.fulfilled, (state, action) => {
           state.status = 'idle'
-          state.user = action.payload
+          state.user = action.payload.user
+          state.emailVerified = action.payload.emailVerified
+          state.verificationEmailSent =
+            action.payload.verificationEmailSent ?? true
           state.initialized = true
         })
         .addCase(thunk.rejected, (state, action) => {

@@ -12,6 +12,8 @@ export const ROUTES = {
   CASTING: '/casting',
   SIGNIN: '/signin',
   SIGNUP: '/signup',
+  CHECK_EMAIL: '/check-email',
+  VERIFY_EMAIL: '/verify-email',
   ACCOUNT: '/account',
   JOURNEY: '/journey'
 }

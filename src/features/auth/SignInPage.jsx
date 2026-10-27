@@ -3,13 +3,15 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
 import { ROUTES } from '@/shared/constants/routes'
-import { AFTER_AUTH_ROUTE } from './constants'
+import { getPostAuthRoute } from './constants'
 import { clearAuthError, loginUser } from './state/authSlice'
 
 export default function SignInPage() {
   const router = useRouter()
   const dispatch = useDispatch()
-  const { user, initialized, status, error } = useSelector((s) => s.auth)
+  const { user, initialized, emailVerified, status, error } = useSelector(
+    (s) => s.auth
+  )
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -20,10 +22,11 @@ export default function SignInPage() {
     dispatch(clearAuthError())
   }, [dispatch])
 
-  // Already signed in (or just signed in) -> leave this page
+  // Already signed in (or just signed in) -> leave this page. Unverified
+  // accounts go to the "check your email" page (with a Resend button).
   useEffect(() => {
-    if (initialized && user) router.replace(AFTER_AUTH_ROUTE)
-  }, [initialized, user, router])
+    if (initialized && user) router.replace(getPostAuthRoute(emailVerified))
+  }, [initialized, user, emailVerified, router])
 
   const handleSubmit = (e) => {
     e.preventDefault()

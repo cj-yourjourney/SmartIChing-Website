@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useDispatch, useSelector } from 'react-redux'
 import { ROUTES } from '@/shared/constants/routes'
-import { AFTER_AUTH_ROUTE } from './constants'
+import { getPostAuthRoute } from './constants'
 import { clearAuthError, registerUser } from './state/authSlice'
 
 function FieldError({ children }) {
@@ -14,9 +14,8 @@ function FieldError({ children }) {
 export default function SignUpPage() {
   const router = useRouter()
   const dispatch = useDispatch()
-  const { user, initialized, status, error, fieldErrors } = useSelector(
-    (s) => s.auth
-  )
+  const { user, initialized, emailVerified, status, error, fieldErrors } =
+    useSelector((s) => s.auth)
 
   const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
@@ -30,23 +29,31 @@ export default function SignUpPage() {
     dispatch(clearAuthError())
   }, [dispatch])
 
-  // Already signed in (or just signed up) -> leave this page
+  // Already signed in (or just signed up) -> leave this page. A brand new
+  // account is unverified, so it lands on the "check your email" page.
   useEffect(() => {
-    if (initialized && user) router.replace(AFTER_AUTH_ROUTE)
-  }, [initialized, user, router])
+    if (initialized && user) router.replace(getPostAuthRoute(emailVerified))
+  }, [initialized, user, emailVerified, router])
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (loading) return
 
-    // The backend has no confirm-password field; this is checked here only.
+    // Checked here for instant feedback; the backend checks it too.
     if (password !== confirmPassword) {
       setLocalError('Passwords do not match.')
       return
     }
     setLocalError('')
 
-    dispatch(registerUser({ first_name: firstName.trim(), email, password }))
+    dispatch(
+      registerUser({
+        first_name: firstName.trim(),
+        email,
+        password,
+        password_confirm: confirmPassword
+      })
+    )
   }
 
   const hasFieldErrors = Object.keys(fieldErrors).length > 0
@@ -149,7 +156,9 @@ export default function SignUpPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
-            <FieldError>{localError}</FieldError>
+            <FieldError>
+              {localError || fieldErrors.password_confirm}
+            </FieldError>
           </div>
 
           <button
